@@ -52,7 +52,7 @@
 				<div class="hidden md:flex space-x-6 font-medium">
 					<a href="#home" class="hover:text-orange">Home</a>
 					<a href="#donasi" class="hover:text-orange">Donasi</a>
-					<a href="#relawan" class="hover:text-orange">Relawan</a>
+					<a href="#relawan" class="hover:text-orange">Relawann</a>
 				</div>
 				
 				<button onclick="toggleDarkMode()" 
