@@ -66,7 +66,7 @@
 		<section id="home" class="relative bg-orange text-white">
 			<div class="max-w-6xl mx-auto px-4 py-16 md:py-24">
 				<h1 class="text-4xl md:text-5xl font-bold leading-tight">
-					Donasi untuk Bencana di Sumatera
+					Donasi untuk Bencana di Sumatera dan Aceh
 				</h1>
 				<p class="mt-4 text-lg max-w-2xl">
 					Bantuan Anda sangat berarti untuk saudara kita yang terdampak bencana di Sumatera.
