@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>ACT – Ayoo Cepat Tolong</title>
+		<title>ACT – Ayoo Tolong</title>
 		<link rel="icon" href="<?= base_url('assets/img/favicon.png') ?>">
 		<script src="https://cdn.tailwindcss.com"></script>
 		
