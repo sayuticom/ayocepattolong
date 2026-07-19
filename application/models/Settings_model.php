@@ -8,29 +8,45 @@
 		}
 		
 		public function get(){
-			$query = $this->db->get('settings');
-			if($query->num_rows() > 0){
-				return $query->row();
+			$data = new stdClass();
+
+			$q1 = $this->db->get('settings');
+			if ($q1->num_rows() > 0) {
+				foreach ($q1->row() as $key => $val) {
+					$data->$key = $val;
+				}
 			}
-			return false;
+
+			$q2 = $this->db->get('settingss');
+			if ($q2->num_rows() > 0) {
+				foreach ($q2->row() as $key => $val) {
+					$data->$key = $val;
+				}
+			}
+
+			return $data;
 		}
 		
 		public function update($data){
-			// Cek apakah data settings sudah ada
-			$existing = $this->get();
-			
-			if($existing){
-				// Update existing
-				$this->db->where('id', $existing->id);
-				return $this->db->update('settings', $data);
-				} else {
-				// Insert new
-				return $this->db->insert('settings', $data);
+			$existing = $this->db->get('settings')->row();
+			if ($existing) {
+				$this->db->where('id', $existing->id)->update('settings', $data);
+			} else {
+				$this->db->insert('settings', $data);
+			}
+		}
+
+		public function update_app($data){
+			$existing = $this->db->get('settingss')->row();
+			if ($existing) {
+				$this->db->where('id', $existing->id)->update('settingss', $data);
+			} else {
+				$this->db->insert('settingss', $data);
 			}
 		}
 		
 		public function get_logo_path(){
-			$query = $this->db->select('app_logo')->get('settings');
+			$query = $this->db->select('app_logo')->get('settingss');
 			if($query->num_rows() > 0){
 				$row = $query->row();
 				return !empty($row->app_logo) ? $row->app_logo : null;
@@ -39,11 +55,11 @@
 		}
 		
 		public function get_icon_path(){
-			$query = $this->db->select('app_icon')->get('settings');
+			$query = $this->db->select('app_icon')->get('settingss');
 			if($query->num_rows() > 0){
 				$row = $query->row();
 				return !empty($row->app_icon) ? $row->app_icon : null;
 			}
 			return null;
 		}
-	}	
+	}

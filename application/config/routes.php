@@ -52,6 +52,9 @@
 	$route['default_controller'] = 'home';
 	$route['login'] = 'auth/login';
 	$route['logout'] = 'auth/logout';
+	$route['news'] = 'news/index';
+	$route['news/(:num)/(:any)'] = 'news/detail/$1/$2';
+	$route['news/(:any)'] = 'news/detail/$1';
 	
 	$route['admin'] = 'admin/dashboard';
 	$route['admin/categories'] = 'admin/categories';

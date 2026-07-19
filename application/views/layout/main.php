@@ -173,9 +173,11 @@
 			}
 			
 			.menu-item.active {
-            background: rgba(59, 130, 246, 0.1);
-            border-left: 4px solid #3b82f6;
+            background: rgba(249, 115, 22, 0.12);
+            border-left: 4px solid #f97316;
 			}
+			.menu-item.active i { color: #f97316 !important; }
+			.menu-item.active span { color: #fff; }
 			
 			.notification-badge {
             position: absolute;
@@ -369,6 +371,27 @@
 			.mobile-sidebar.active {
 			transform: translateX(0);
 			}
+			.dt-center { text-align: center !important; }
+			.shadow-card { box-shadow: 0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04); }
+
+			/* === Admin structural fixes === */
+			body { overflow-x: hidden; }
+			.admin-layout { display:flex; min-height:100vh; width:100%; }
+			.admin-sidebar { width:280px; flex-shrink:0; position:fixed; top:0; left:0; height:100vh; overflow-y:auto; z-index:40; display:flex; flex-direction:column; }
+			.admin-main { margin-left:280px; width:calc(100% - 280px); display:flex; flex-direction:column; min-height:100vh; }
+			.admin-topbar { width:100%; position:sticky; top:0; z-index:30; }
+			.admin-content { flex:1; width:100%; max-width:none; padding:24px 32px; }
+			.admin-content > .mb-8 { width:100%; max-width:none; }
+			.admin-footer { width:100%; margin-top:auto; }
+			.admin-table-wrap { width:100%; }
+			.admin-table-wrap table { width:100%; table-layout:fixed; }
+			@media (max-width: 1023px) {
+				.admin-table-wrap { overflow-x:auto; }
+				.admin-layout { flex-direction:column; }
+				.admin-sidebar { display:none; }
+				.admin-main { margin-left:0; width:100%; }
+				.admin-content { padding:16px; }
+			}
 		</style>
 	</head>
 	<body class="dark-mode-transition dark:bg-gray-900">
@@ -381,24 +404,23 @@
 			</div>
 		</div>
 		
-		<div class="flex flex-col lg:flex-row min-h-screen">
+		<div class="admin-layout">
 			
 			<!-- Desktop Sidebar -->
-			<aside class="hidden lg:flex lg:w-72 lg:flex-col lg:fixed lg:inset-y-0">
+			<aside class="admin-sidebar">
 				<div class="sidebar-gradient flex-1 flex flex-col">
 					<!-- Logo Area -->
 					<div class="p-6 border-b border-gray-700/30">
 						<div class="flex items-center space-x-3">
 							<?php if (!empty($settings->app_logo)): ?>
-							<img src="<?= base_url($settings->app_logo) ?>" alt="Logo" class="w-10 h-10 rounded-lg">
+							<img src="<?= base_url($settings->app_logo) ?>" alt="Logo" class="w-14 h-14 rounded-lg object-cover">
 							<?php else: ?>
-							<div class="w-10 h-10 bg-gradient-to-r from-primary-600 to-purple-600 rounded-lg flex items-center justify-center">
-								<i class="fas fa-cube text-white text-lg"></i>
+							<div class="w-14 h-14 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
+								<i class="fas fa-cube text-white text-xl"></i>
 							</div>
 							<?php endif; ?>
 							<div>
-								<h1 class="text-xl font-bold text-white"><?= $settings->app_name ?? 'Admin Panel' ?></h1>
-								<p class="text-xs text-gray-400">v1.0.0</p>
+								<h1 class="text-lg font-bold text-white"><?= $settings->app_name ?? 'Admin Panel' ?></h1>
 							</div>
 						</div>
 					</div>
@@ -483,9 +505,9 @@
                                 'informasi' => [
 								'url' => site_url('admin/informasi'),
 								'icon' => 'fas fa-newspaper',
-								'text' => 'Informasi',
+								'text' => 'Warta Kemanusiaan',
 								'badge' => '',
-								'color' => 'text-purple-400'
+								'color' => 'text-orange-400'
                                 ],
                                 'slider' => [
 								'url' => site_url('admin/slider'),
@@ -592,13 +614,15 @@
 					<div class="p-6 border-b border-gray-700/30 flex justify-between items-center">
 						<div class="flex items-center space-x-3">
 							<?php if (!empty($settings->app_logo)): ?>
-							<img src="<?= base_url($settings->app_logo) ?>" alt="Logo" class="w-10 h-10 rounded-lg">
+							<img src="<?= base_url($settings->app_logo) ?>" alt="Logo" class="w-12 h-12 rounded-lg object-cover">
 							<?php else: ?>
-							<div class="w-10 h-10 bg-gradient-to-r from-primary-600 to-purple-600 rounded-lg flex items-center justify-center">
+							<div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
 								<i class="fas fa-cube text-white text-lg"></i>
 							</div>
 							<?php endif; ?>
-							<h1 class="text-xl font-bold text-white"><?= $settings->app_name ?? 'Admin Panel' ?></h1>
+							<div>
+								<h1 class="text-lg font-bold text-white"><?= $settings->app_name ?? 'Admin Panel' ?></h1>
+							</div>
 						</div>
 						<button id="closeMobileMenu" class="text-gray-300 hover:text-white">
 							<i class="fas fa-times text-xl"></i>
@@ -637,7 +661,7 @@
 								foreach ($menu_items as $key => $menu):
 								$is_active = strpos($current_url, $key) !== false || 
 								($key == 'dashboard' && $current_url == site_url('admin'));
-								$active_class = $is_active ? 'bg-gray-800/50' : '';
+								$active_class = $is_active ? 'bg-orange-500/10 border-l-4 border-orange-500' : '';
 							?>
 							<li>
 								<a href="<?= $menu['url'] ?>" 
@@ -669,10 +693,10 @@
 			</aside>
 			
 			<!-- Main Content -->
-			<div class="lg:ml-72 flex-1 flex flex-col min-h-screen">
+			<div class="admin-main">
 				
 				<!-- Top Navigation -->
-				<header class="glass-effect sticky top-0 z-30">
+				<header class="admin-topbar glass-effect">
 					<div class="flex items-center justify-between px-6 py-4">
 						<!-- Left: Breadcrumb and Title -->
 						<div class="flex items-center space-x-4">
@@ -693,20 +717,22 @@
 									<?php 
 										$uri_segments = $this->uri->segment_array();
 										$segments_count = count($uri_segments);
+										$label_map = ['informasi' => 'Warta Kemanusiaan'];
 										for($i = 2; $i <= $segments_count; $i++):
                                         $segment = $uri_segments[$i];
                                         $is_last = ($i == $segments_count);
+                                        $label = isset($label_map[$segment]) ? $label_map[$segment] : ucfirst(str_replace('_', ' ', $segment));
 									?>
 									<li class="flex items-center">
 										<i class="fas fa-chevron-right text-xs text-gray-400 mx-2"></i>
 										<?php if($is_last): ?>
-										<span class="text-sm font-semibold text-primary-600">
-											<?= ucfirst(str_replace('_', ' ', $segment)) ?>
+										<span class="text-sm font-semibold text-orange-600">
+											<?= $label ?>
 										</span>
 										<?php else: ?>
 										<a href="<?= site_url(implode('/', array_slice($uri_segments, 0, $i))) ?>" 
-										class="text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600">
-											<?= ucfirst(str_replace('_', ' ', $segment)) ?>
+										class="text-sm text-gray-600 dark:text-gray-400 hover:text-orange-600">
+											<?= $label ?>
 										</a>
 										<?php endif; ?>
 									</li>
@@ -818,7 +844,7 @@
 				</header>
 				
 				<!-- Main Content Area -->
-				<main class="flex-1 px-6 py-4">
+				<main class="admin-content">
 					<!-- Page Header -->
 					<div class="mb-6">
 						<?php if(isset($page_header) && $page_header): ?>
@@ -854,7 +880,7 @@
 				</main>
 				
 				<!-- Footer -->
-				<footer class="mt-auto border-t border-gray-200 dark:border-gray-800 py-4 px-6">
+				<footer class="admin-footer border-t border-gray-200 dark:border-gray-800 py-4 px-6">
 					<div class="flex flex-col md:flex-row justify-between items-center">
 						<div class="text-sm text-gray-600 dark:text-gray-400 mb-4 md:mb-0">
 							<p>© <?= date('Y') ?> <?= $settings->app_name ?? 'Admin Panel' ?>. All rights reserved.</p>

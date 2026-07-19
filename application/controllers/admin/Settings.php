@@ -47,7 +47,7 @@
 				}
 			}
 			
-			$this->Settings_model->update($data);
+			$this->Settings_model->update_app($data);
 			
 			$this->session->set_flashdata('success', 'Pengaturan berhasil diperbarui!');
 			redirect('admin/settings');
@@ -106,9 +106,20 @@
 			$config['quality'] = '90%';
 			
 			$this->load->library('image_lib', $config);
+
+			// Supresi warning libpng (iCCP sRGB profile) yang tidak berbahaya
+			set_error_handler(function ($severity, $message) {
+				if (strpos($message, 'libpng warning') !== false) {
+					return true;
+				}
+				return false;
+			}, E_WARNING);
 			
-			if (!$this->image_lib->resize()) {
-				// Log error resize, tapi jangan gagalkan proses
+			$result = $this->image_lib->resize();
+			
+			restore_error_handler();
+
+			if (!$result) {
 				log_message('error', 'Image resize failed: ' . $this->image_lib->display_errors());
 			}
 			

@@ -1,274 +1,455 @@
+<?php
+	$this->load->helper('news');
+
+	$settings = !empty($settings) ? $settings : false;
+	$app_name = !empty($settings->app_name) ? $settings->app_name : 'Ayo Cepat Tolong';
+	$site_desc = !empty($settings->site_desc) ? $settings->site_desc : 'Gerakan kemanusiaan antar komunitas yang diinisiasi oleh LAMTREN.';
+	$wa_number = !empty($settings->wa_number) ? preg_replace('/\D+/', '', $settings->wa_number) : '';
+	$logo_path = (!empty($settings->app_logo) && file_exists(FCPATH . $settings->app_logo)) ? $settings->app_logo : 'assets/img/act_logo.png';
+	$icon_path = (!empty($settings->app_icon) && file_exists(FCPATH . $settings->app_icon)) ? $settings->app_icon : 'assets/img/favicon.png';
+
+	if (!function_exists('act_text_limit')) {
+		function act_text_limit($text, $limit = 160)
+		{
+			$text = trim(preg_replace('/\s+/', ' ', html_entity_decode(strip_tags((string) $text), ENT_QUOTES, 'UTF-8')));
+			if ($text === '') {
+				return '';
+			}
+
+			if (function_exists('mb_strlen') && function_exists('mb_substr')) {
+				return mb_strlen($text, 'UTF-8') > $limit ? rtrim(mb_substr($text, 0, $limit, 'UTF-8')) . '...' : $text;
+			}
+
+			return strlen($text) > $limit ? rtrim(substr($text, 0, $limit)) . '...' : $text;
+		}
+	}
+
+	if (!function_exists('act_image_url')) {
+		function act_image_url($filename, $folder = 'uploads')
+		{
+			$filename = trim((string) $filename);
+			if ($filename === '') {
+				return '';
+			}
+
+			if (preg_match('#^https?://#i', $filename)) {
+				return $filename;
+			}
+
+			$candidates = [
+				trim($folder, '/') . '/' . ltrim($filename, '/'),
+				'uploads/' . ltrim($filename, '/'),
+			];
+
+			foreach (array_unique($candidates) as $path) {
+				if (file_exists(FCPATH . $path)) {
+					return base_url($path);
+				}
+			}
+
+			return '';
+		}
+	}
+
+	$slider_items = [];
+	if (!empty($slider)) {
+		foreach ($slider as $row) {
+			$image_url = act_image_url(isset($row->image) ? $row->image : '', 'uploads/slider');
+			if ($image_url) {
+				$slider_items[] = [
+					'image' => $image_url,
+					'title' => !empty($row->title) ? $row->title : 'Kegiatan Ayo Cepat Tolong',
+					'caption' => !empty($row->caption) ? $row->caption : '',
+				];
+			}
+		}
+	}
+
+	$hero_image = !empty($slider_items) ? $slider_items[0]['image'] : (file_exists(FCPATH . 'uploads/lautan-kayu-di-aceh-tamiang.webp') ? base_url('uploads/lautan-kayu-di-aceh-tamiang.webp') : base_url($logo_path));
+?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>ACT – Ayoo Tolong</title>
-		<link rel="icon" href="<?= base_url('assets/img/favicon.png') ?>">
-		<script src="https://cdn.tailwindcss.com"></script>
-		
-		<script>
-			function toggleDarkMode() {
-				document.documentElement.classList.toggle('dark');
-			}
-			
-			tailwind.config = {
-				darkMode: 'class',
-				theme: {
-					extend: {
-						colors: {
-							orange: '#ff7a00',
-						}
-					}
-				}
-			}
-		</script>
-		
-		<style>
-			.orange { color:#ff7a00; }
-			.bg-orange { background:#ff7a00; }
-		</style>
+		<title><?= html_escape($app_name) ?></title>
+		<link rel="icon" href="<?= base_url($icon_path) ?>">
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+		<link rel="stylesheet" href="<?= base_url('assets/style.css') ?>">
 	</head>
-	
-	<body class="bg-gray-100 dark:bg-gray-900 dark:text-white">
-		
-		<!-- FLASH MESSAGE -->
+	<body class="act-page">
 		<?php if ($this->session->flashdata('sukses')): ?>
-		<div class="p-4 bg-green-500 text-white text-center">
+		<div class="act-flash">
 			<?= $this->session->flashdata('sukses'); ?>
 		</div>
 		<?php endif; ?>
-		
-		<!-- NAVBAR -->
-		<header class="bg-white dark:bg-gray-800 shadow sticky top-0 z-50">
-			<div class="max-w-6xl mx-auto flex items-center justify-between px-4 py-4">
-				<div>
-					<a href="#home">
-						<img src="<?= base_url('assets/img/act_logo.png') ?>" alt="Logo ACT" class="h-10 w-auto">
-					</a>
+
+		<header class="act-header">
+			<div class="act-container act-nav">
+				<a href="#home" class="act-brand" aria-label="Beranda Ayo Cepat Tolong">
+					<img src="<?= base_url($logo_path) ?>" alt="<?= html_escape($app_name) ?>">
+				</a>
+
+				<nav class="act-menu" aria-label="Navigasi utama">
+					<a href="#home">Beranda</a>
+					<a href="#warta">Warta</a>
+					<a href="#donasi">Donasi</a>
+					<a href="#relawan">Relawan</a>
+					<a href="#tentang">Tentang Kami</a>
+				</nav>
+
+				<div class="act-nav-actions">
+					<a href="#donasi" class="act-btn act-btn-primary act-btn-compact">Donasi Sekarang</a>
+					<button class="act-menu-toggle" type="button" aria-label="Buka menu" aria-expanded="false" aria-controls="actMobileMenu">
+						<span></span>
+						<span></span>
+						<span></span>
+					</button>
 				</div>
-				
-				
-				<div class="hidden md:flex space-x-6 font-medium">
-					<a href="#home" class="hover:text-orange">Home</a>
-					<a href="#donasi" class="hover:text-orange">Donasi</a>
-					<a href="#relawan" class="hover:text-orange">Relawann</a>
+			</div>
+
+			<div id="actMobileMenu" class="act-mobile-menu">
+				<div class="act-container">
+					<a href="#home">Beranda</a>
+					<a href="#warta">Warta</a>
+					<a href="#donasi">Donasi</a>
+					<a href="#relawan">Relawan</a>
+					<a href="#tentang">Tentang Kami</a>
+					<a href="#donasi" class="act-btn act-btn-primary">Donasi Sekarang</a>
 				</div>
-				
-				<button onclick="toggleDarkMode()" 
-				class="px-3 py-1 rounded bg-orange text-white text-sm">
-					Dark Mode
-				</button>
 			</div>
 		</header>
-		
-		<!-- HERO -->
-		<section id="home" class="relative bg-orange text-white">
-			<div class="max-w-6xl mx-auto px-4 py-16 md:py-24">
-				<h1 class="text-4xl md:text-5xl font-bold leading-tight">
-					Donasi untuk Bencana di Sumatera dan Aceh
-				</h1>
-				<p class="mt-4 text-lg max-w-2xl">
-					Bantuan Anda sangat berarti untuk saudara kita yang terdampak bencana di Sumatera.
-				</p>
-				
-				<div class="mt-8 flex space-x-4">
-					<a href="#donasi" class="px-6 py-3 bg-white orange font-semibold rounded shadow">
-						Donasi Sekarang
-					</a>
-					
-					<a href="#relawan" class="px-6 py-3 border border-white rounded">
-						Daftar Relawan
-					</a>
-				</div>
-			</div>
-		</section>
-		<!-- HERO SECTION -->
-		<section id="home" class="relative bg-gray text-white">
-			<!-- IMAGE SLIDER -->
-			<div class="relative w-full max-w-6xl mx-auto m-8 overflow-hidden rounded-lg shadow-lg">
-				<div id="slider" class="flex transition-transform duration-500">
-					<?php foreach($slider AS $row): ?>
-					<img src="<?=base_url();?>uploads/slider/<?=$row->image?>" alt="<?=$row->title?>" class="w-full flex-shrink-0">
-					<?php endforeach;?>
-				</div>
-				
-				<!-- Prev / Next Buttons -->
-				<button id="prevBtn" aria-label="Previous Slide" 
-				class="absolute top-1/2 left-3 -translate-y-1/2 bg-black bg-opacity-50 text-white rounded-full p-2 hover:bg-opacity-75">
-					&#10094;
-				</button>
-				
-				<button id="nextBtn" aria-label="Next Slide" 
-				class="absolute top-1/2 right-3 -translate-y-1/2 bg-black bg-opacity-50 text-white rounded-full p-2 hover:bg-opacity-75">
-					&#10095;
-				</button>
-			</div>
-		</section>
-		
-		<!-- INFORMASI BENCANA -->
-		<section class="py-16 bg-gray-50 dark:bg-gray-800">
-			<div class="max-w-6xl mx-auto px-4">
-				<h2 class="text-3xl font-bold orange text-center mb-12">
-					Kondisi Terkini Bencana Sumatera
-				</h2>
-				
-				<div class="grid md:grid-cols-3 gap-8">
-					<?php foreach($info AS $row): ?>
-					<div class="p-6 bg-white dark:bg-gray-700 rounded-lg shadow">
-						<h3 class="font-bold text-xl mb-2 orange"><?=$row->title?></h3>
-						<p><?=$row->caption?></p>
+
+		<main>
+			<section id="home" class="act-hero">
+				<div class="act-container act-hero-grid">
+					<div class="act-hero-copy">
+						<p class="act-eyebrow">GERAKAN KEMANUSIAAN ANTAR KOMUNITAS</p>
+						<h1>Bergerak Cepat,<br>Menolong Lebih Dekat</h1>
+						<p class="act-hero-text">Menghubungkan komunitas, relawan, dan masyarakat untuk merespons bencana serta kebutuhan kemanusiaan secara cepat dan tepat.</p>
+						<div class="act-hero-actions">
+							<a href="#donasi" class="act-btn act-btn-primary">Donasi Sekarang</a>
+							<a href="#relawan" class="act-btn act-btn-outline">Daftar Relawan</a>
+						</div>
+						<div class="act-trust-list" aria-label="Nilai gerakan">
+							<span class="act-trust-green">Gerak Cepat</span>
+							<span>Transparan</span>
+							<span class="act-trust-red">Kolaboratif</span>
+						</div>
 					</div>
-					<?php endforeach;?>
+					<div class="act-hero-media">
+						<img src="<?= $hero_image ?>" alt="Dokumentasi kegiatan kemanusiaan">
+					</div>
 				</div>
-			</div>
-		</section>
-		
-		<!-- DONASI -->
-		<section id="donasi" class="py-16">
-			<div class="max-w-6xl mx-auto px-4">
-				<h2 class="text-3xl font-bold orange text-center mb-12">Donasi Sekarang</h2>
-				
-				<div class="text-center">
-					<button 
-					onclick="document.getElementById('modalDonasi').classList.remove('hidden')"
-					class="px-8 py-3 bg-orange text-white font-semibold rounded-lg shadow">
-						Lihat Rekening Transfer
+			</section>
+
+			<?php if (!empty($slider_items)): ?>
+			<section class="act-section act-slider-section" aria-label="Dokumentasi kegiatan">
+				<div class="act-container">
+					<div class="act-slider-shell">
+						<div id="slider" class="act-slider-track">
+							<?php foreach($slider_items as $row): ?>
+							<article class="act-slide">
+								<img src="<?= $row['image'] ?>" alt="<?= html_escape($row['title']) ?>">
+								<div class="act-slide-caption">
+									<h2><?= html_escape($row['title']) ?></h2>
+									<?php if (!empty($row['caption'])): ?>
+									<p><?= html_escape(act_text_limit($row['caption'], 120)) ?></p>
+									<?php endif; ?>
+								</div>
+							</article>
+							<?php endforeach;?>
+						</div>
+
+						<?php if (count($slider_items) > 1): ?>
+						<button id="prevBtn" class="act-slider-btn act-slider-prev" type="button" aria-label="Slide sebelumnya">
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+						</button>
+						<button id="nextBtn" class="act-slider-btn act-slider-next" type="button" aria-label="Slide berikutnya">
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+						</button>
+						<?php endif; ?>
+					</div>
+				</div>
+			</section>
+			<?php endif; ?>
+
+			<section id="warta" class="act-section act-news-section">
+				<div class="act-container">
+					<div class="act-section-heading">
+						<p class="act-eyebrow">WARTA</p>
+						<h2>Warta Kemanusiaan</h2>
+						<p>Informasi terbaru mengenai situasi darurat, kegiatan relawan, dan penyaluran bantuan.</p>
+					</div>
+
+					<?php if (!empty($info)): ?>
+					<?php $accent_classes = ['act-news-card-accent-green', 'act-news-card-accent-orange', 'act-news-card-accent-red']; $acc_i = 0; ?>
+					<div class="act-news-grid <?= count($info) === 1 ? 'act-news-grid-single' : '' ?>">
+						<?php foreach($info AS $row): ?>
+						<?php
+							$news_image = act_news_image_url($row);
+							$has_news_image = act_news_has_image_file($row);
+							$excerpt = act_news_text_limit(isset($row->caption) ? $row->caption : '', 160);
+							$detail_url = act_news_detail_url($row);
+							$whatsapp_url = act_news_whatsapp_url($row, $excerpt);
+							$date_label = !empty($row->created_at) ? date('d M Y', strtotime($row->created_at)) : 'Warta Lapangan';
+							$card_accent = $accent_classes[$acc_i % 3]; $acc_i++;
+							$badge_class = $acc_i % 3 === 0 ? 'act-badge-green' : ($acc_i % 3 === 2 ? 'act-badge-red' : '');
+						?>
+						<article class="act-news-card act-news-card-accent <?= $card_accent ?>">
+							<div class="act-news-image <?= $has_news_image ? '' : 'act-news-placeholder' ?>">
+								<img src="<?= $news_image ?>" alt="<?= html_escape($row->title) ?>">
+								<?php if (!$has_news_image): ?>
+								<div class="act-placeholder-mark" aria-hidden="true">
+									<svg viewBox="0 0 64 64">
+										<path d="M16 38c8-16 24-16 32 0"/>
+										<path d="M20 24h24"/>
+										<path d="M32 12v40"/>
+										<path d="M14 48h36"/>
+									</svg>
+								</div>
+								<?php endif; ?>
+							</div>
+							<div class="act-news-body">
+								<div class="act-news-meta">
+									<span class="act-badge <?= $badge_class ?>">Kabar Lapangan</span>
+									<time><?= html_escape($date_label) ?></time>
+								</div>
+								<h3><?= html_escape($row->title) ?></h3>
+								<p><?= html_escape($excerpt) ?></p>
+								<div class="act-card-actions">
+									<a href="<?= html_escape($detail_url) ?>" class="act-link">Baca Selengkapnya</a>
+									<a href="<?= html_escape($whatsapp_url); ?>" class="act-share-link" target="_blank" rel="noopener noreferrer" aria-label="Bagikan <?= html_escape($row->title); ?> melalui WhatsApp">
+										<?= act_whatsapp_icon(); ?>
+										<span>Bagikan</span>
+									</a>
+								</div>
+							</div>
+						</article>
+						<?php endforeach;?>
+					</div>
+					<?php else: ?>
+					<div class="act-empty-state">
+						<h3>Belum ada warta yang ditampilkan.</h3>
+						<p>Informasi kegiatan terbaru akan muncul setelah data tersedia dari admin.</p>
+					</div>
+					<?php endif; ?>
+				</div>
+			</section>
+
+			<section id="donasi" class="act-donation-cta">
+				<div class="act-container act-donation-grid">
+					<div>
+						<p class="act-eyebrow">DONASI</p>
+						<h2>Satu Bantuan, Satu Harapan</h2>
+						<p>Bantuan Anda membantu kebutuhan darurat, pendidikan, pemulihan trauma, dan pendampingan masyarakat terdampak.</p>
+					</div>
+					<button onclick="document.getElementById('modalDonasi').classList.add('is-open')" class="act-btn act-btn-light" type="button">
+						Salurkan Donasi
 					</button>
 				</div>
-			</div>
-		</section>
-		
-		<!-- MODAL DONASI -->
-		<div id="modalDonasi" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
-			<div class="bg-white dark:bg-gray-800 p-8 rounded-xl w-[28rem] max-w-lg shadow-lg">
-				
-				<h3 class="text-2xl font-bold mb-6 orange text-center">Rekening Donasi</h3>
-				
-				<ul class="space-y-3 text-2xl text-center">
-					<li><strong>BCA:</strong> 245 258 380 2</li>
-					<li class="text-xl">a.n Yayasan Harapan Dhuafa Banten</li>
-				</ul>
-				
-				<button 
-				onclick="document.getElementById('modalDonasi').classList.add('hidden')"
-				class="mt-8 w-full py-3 bg-orange text-white font-semibold rounded-xl hover:bg-orange-600 transition">
-					Tutup
+			</section>
+
+			<section id="tentang" class="act-section act-steps-section">
+				<div class="act-container">
+					<div class="act-section-heading">
+						<p class="act-eyebrow">CARA KAMI BERGERAK</p>
+						<h2>Kerja kemanusiaan yang terverifikasi dan kolaboratif.</h2>
+					</div>
+
+					<div class="act-steps-grid">
+						<article class="act-step-card">
+							<div class="act-icon-box act-icon-green">
+								<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 10-13h-7l1-7z"/></svg>
+							</div>
+							<h3>Respons Cepat</h3>
+							<p>Menerima informasi dan melakukan verifikasi kebutuhan lapangan.</p>
+						</article>
+						<article class="act-step-card">
+							<div class="act-icon-box">
+								<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 11c1.66 0 3-1.57 3-3.5S17.66 4 16 4s-3 1.57-3 3.5 1.34 3.5 3 3.5zM8 11c1.66 0 3-1.57 3-3.5S9.66 4 8 4 5 5.57 5 7.5 6.34 11 8 11zM2.5 20c.7-3.2 2.8-5 5.5-5s4.8 1.8 5.5 5M10.5 20c.7-3.2 2.8-5 5.5-5s4.8 1.8 5.5 5"/></svg>
+							</div>
+							<h3>Kolaborasi Komunitas</h3>
+							<p>Menghubungkan relawan, lembaga, dan masyarakat yang ingin membantu.</p>
+						</article>
+						<article class="act-step-card">
+							<div class="act-icon-box act-icon-red">
+								<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7L9 18l-5-5M4 19h16"/></svg>
+							</div>
+							<h3>Penyaluran Tepat</h3>
+							<p>Menyalurkan bantuan berdasarkan kebutuhan yang telah diverifikasi.</p>
+						</article>
+					</div>
+				</div>
+			</section>
+
+			<section id="relawan" class="act-section act-volunteer-section">
+				<div class="act-container act-volunteer-grid">
+					<div class="act-volunteer-copy">
+						<p class="act-eyebrow">RELAWAN</p>
+						<h2>Daftar menjadi relawan lapangan atau pendukung kegiatan.</h2>
+						<p>Isi data singkat berikut agar tim dapat menghubungi Anda saat ada kebutuhan dukungan.</p>
+					</div>
+					<form id="registerForm" class="act-form">
+						<div class="act-field">
+							<label for="nama">Nama Lengkap</label>
+							<input id="nama" name="nama" required type="text" autocomplete="name">
+						</div>
+						<div class="act-field">
+							<label for="telp">Telepon</label>
+							<input id="telp" name="telp" required type="text" autocomplete="tel">
+						</div>
+						<div class="act-field">
+							<label for="alamat">Alamat</label>
+							<textarea id="alamat" name="alamat" required rows="4"></textarea>
+						</div>
+						<button class="act-btn act-btn-primary act-btn-full" type="submit">Daftar Sekarang</button>
+						<div id="result" class="act-form-result" aria-live="polite"></div>
+					</form>
+				</div>
+			</section>
+		</main>
+
+		<div id="modalDonasi" class="act-modal" role="dialog" aria-modal="true" aria-labelledby="donasiTitle">
+			<div class="act-modal-panel">
+				<button onclick="document.getElementById('modalDonasi').classList.remove('is-open')" class="act-modal-close" type="button" aria-label="Tutup modal">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
 				</button>
+				<h3 id="donasiTitle">Rekening Donasi</h3>
+				<div class="act-bank-box">
+					<span>BCA</span>
+					<strong>245 258 380 2</strong>
+					<p>a.n Yayasan Harapan Dhuafa Banten</p>
+				</div>
+				<button onclick="document.getElementById('modalDonasi').classList.remove('is-open')" class="act-btn act-btn-primary act-btn-full" type="button">Tutup</button>
 			</div>
 		</div>
-		
-		
-		<!-- RELAWAN -->
-		<section id="relawan" class="py-16 bg-gray-100 dark:bg-gray-900">
-			<div class="max-w-6xl mx-auto px-4">
-				<h2 class="text-3xl font-bold orange text-center mb-12">Pendaftaran Relawan</h2>
-				<form id="registerForm" class="max-w-xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow space-y-4">
-					<div>
-						<label class="font-semibold">Nama Lengkap</label>
-						<input name="nama" required type="text" class="w-full p-3 border rounded dark:bg-gray-700">
-					</div>
-					
-					<div>
-						<label class="font-semibold">Telepon</label>
-						<input name="telp" required type="text" class="w-full p-3 border rounded dark:bg-gray-700">
-					</div>
-					
-					<div>
-						<label class="font-semibold">Alamat</label>
-						<textarea name="alamat" required class="w-full p-3 border rounded dark:bg-gray-700"></textarea>
-					</div>
-					
-					<button class="w-full py-3 bg-orange text-white font-semibold rounded">
-						Daftar Sekarang
-					</button>
-				</form>
-				<div id="result" class="mt-4 text-center font-semibold"></div>
+
+		<footer class="act-footer">
+			<div class="act-container act-footer-grid">
+				<div class="act-footer-brand">
+					<img src="<?= base_url($logo_path) ?>" alt="<?= html_escape($app_name) ?>">
+					<p><?= html_escape($site_desc) ?></p>
+				</div>
+				<div class="act-footer-links">
+					<span class="act-footer-accent"></span>
+					<h3>Menu Cepat</h3>
+					<a href="#home">Beranda</a>
+					<a href="#warta">Warta</a>
+					<a href="#donasi">Donasi</a>
+					<a href="#relawan">Relawan</a>
+					<a href="#tentang">Tentang Kami</a>
+				</div>
+				<div class="act-footer-contact">
+					<h3>Kontak</h3>
+					<?php if (!empty($wa_number)): ?>
+					<a href="https://wa.me/<?= html_escape($wa_number) ?>" target="_blank" rel="noopener">WhatsApp <?= html_escape($settings->wa_number) ?></a>
+					<?php else: ?>
+					<p>WhatsApp belum tersedia.</p>
+					<?php endif; ?>
+					<p>ayocepattolong.info</p>
+				</div>
 			</div>
-		</section>
-		
-		<!-- FOOTER -->
-		<footer class="py-6 bg-gray-800 text-center text-white text-sm">
-			© 2025 ACT – Ayoo Cepat Tolong | ayocepattolong.info
+			<div class="act-container act-footer-bottom">
+				<p>&copy; <?= date('Y') ?> <?= html_escape($app_name) ?>. Semua hak dilindungi.</p>
+			</div>
 		</footer>
-		<!-- reCAPTCHA v3 -->
+
 		<script src="https://www.google.com/recaptcha/api.js?render=6Ldc4SYsAAAAAACOcAaMF4s5XiCEFtQJThOJ_X7_"></script>
-		
 		<script>
 			(function(){
-				const slider = document.getElementById('slider');
-				const slidesCount = slider.children.length;
-				let currentIndex = 0;
-				
-				const prevBtn = document.getElementById('prevBtn');
-				const nextBtn = document.getElementById('nextBtn');
-				
-				function updateSlider() {
-					slider.style.transform = `translateX(-${currentIndex * 100}%)`;
+				const toggle = document.querySelector('.act-menu-toggle');
+				const mobileMenu = document.getElementById('actMobileMenu');
+
+				if (toggle && mobileMenu) {
+					toggle.addEventListener('click', function() {
+						const isOpen = mobileMenu.classList.toggle('is-open');
+						toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+					});
+
+					mobileMenu.querySelectorAll('a').forEach(function(link) {
+						link.addEventListener('click', function() {
+							mobileMenu.classList.remove('is-open');
+							toggle.setAttribute('aria-expanded', 'false');
+						});
+					});
 				}
-				
-				prevBtn.addEventListener('click', () => {
-					currentIndex = (currentIndex - 1 + slidesCount) % slidesCount;
-					updateSlider();
-				});
-				
-				nextBtn.addEventListener('click', () => {
-					currentIndex = (currentIndex + 1) % slidesCount;
-					updateSlider();
-				});
-				
-				// Auto slide every 5 seconds
-				setInterval(() => {
-					currentIndex = (currentIndex + 1) % slidesCount;
-					updateSlider();
-				}, 5000);
+
+				const slider = document.getElementById('slider');
+				if (slider && slider.children.length > 1) {
+					const slidesCount = slider.children.length;
+					let currentIndex = 0;
+					const prevBtn = document.getElementById('prevBtn');
+					const nextBtn = document.getElementById('nextBtn');
+
+					function updateSlider() {
+						slider.style.transform = 'translateX(-' + (currentIndex * 100) + '%)';
+					}
+
+					prevBtn.addEventListener('click', function() {
+						currentIndex = (currentIndex - 1 + slidesCount) % slidesCount;
+						updateSlider();
+					});
+
+					nextBtn.addEventListener('click', function() {
+						currentIndex = (currentIndex + 1) % slidesCount;
+						updateSlider();
+					});
+
+					setInterval(function() {
+						currentIndex = (currentIndex + 1) % slidesCount;
+						updateSlider();
+					}, 5000);
+				}
+
+				const modal = document.getElementById('modalDonasi');
+				if (modal) {
+					modal.addEventListener('click', function(event) {
+						if (event.target === modal) {
+							modal.classList.remove('is-open');
+						}
+					});
+				}
 			})();
-			
+
 			document.getElementById("registerForm").addEventListener("submit", function(e) {
 				e.preventDefault();
-				
+
 				grecaptcha.ready(function () {
 					grecaptcha.execute("6Ldc4SYsAAAAAACOcAaMF4s5XiCEFtQJThOJ_X7_", { action: "submit" })
 					.then(function (token) {
-						
 						const payload = {
 							nama: document.querySelector("[name='nama']").value,
 							telp: document.querySelector("[name='telp']").value,
 							alamat: document.querySelector("[name='alamat']").value,
 							recaptcha_token: token
 						};
-						
-						fetch("<?= base_url('api/register') ?>", {   // ← GANTI
+
+						fetch("<?= base_url('api/register') ?>", {
 							method: "POST",
 							headers: {
 								"Content-Type": "application/json",
-								"X-API-KEY": "RAddaadad_12345"              // ← GANTI
+								"X-API-KEY": "RAddaadad_12345"
 							},
 							body: JSON.stringify(payload)
 						})
 						.then(res => res.json())
 						.then(res => {
 							if (res.status === "success") {
-								
 								document.getElementById("registerForm").reset();
-								
-								document.getElementById("result").innerHTML =
-								`<span class="text-green-600">${res.message}</span>`;
-								} else {
-								document.getElementById("result").innerHTML =
-								`<span class="text-red-600">${res.error || res.message}</span>`;
+								document.getElementById("result").innerHTML = '<span class="act-success">' + res.message + '</span>';
+							} else {
+								document.getElementById("result").innerHTML = '<span class="act-error">' + (res.error || res.message) + '</span>';
 							}
-							
 						})
 						.catch(err => {
-							document.getElementById("result").innerHTML =
-							`<span class="text-red-600">Error: ${err}</span>`;
+							document.getElementById("result").innerHTML = '<span class="act-error">Error: ' + err + '</span>';
 						});
 					});
 				});
 			});
-			
 		</script>
-		
 	</body>
 </html>

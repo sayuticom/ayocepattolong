@@ -11,12 +11,14 @@
 			$this->load->model('Relawan_model');
 			$this->load->model('Informasi_model');
 			$this->load->model('Slider_model');
+			$this->load->model('Settings_model');
 		}
 		public function index()
 		{
 			
 			$data['info'] = $this->Informasi_model->get_info(3);
 			$data['slider'] = $this->Slider_model->get_info(6);
+			$data['settings'] = $this->Settings_model->get();
 			$this->load->view('frontend',$data);
 		}
 		
