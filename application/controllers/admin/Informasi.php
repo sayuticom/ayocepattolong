@@ -6,7 +6,7 @@
 		public function __construct() {
 			parent::__construct();
 			$this->load->model('Informasi_model');
-			$this->load->helper(['url', 'news', 'file']);
+			$this->load->helper(['url', 'news', 'file', 'text']);
 		}
 		
 		public function index() {

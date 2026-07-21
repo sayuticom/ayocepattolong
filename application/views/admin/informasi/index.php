@@ -95,8 +95,8 @@
 			</div>
 
 			<div class="admin-warta-modal-footer">
-				<button type="button" onclick="closeModal()" class="admin-warta-btn admin-warta-btn-cancel">Batal</button>
-				<button type="submit" class="admin-warta-btn admin-warta-btn-simpan">Simpan</button>
+				<button type="button" class="btn-cancel-warta">Batal</button>
+				<button type="submit" id="btnSimpan" class="admin-warta-btn admin-warta-btn-simpan">Simpan</button>
 			</div>
 		</form>
 	</div>
@@ -141,7 +141,7 @@
 .admin-warta-modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); display:none; justify-content:center; align-items:center; z-index:50; }
 .admin-warta-modal-overlay.flex { display:flex; }
 
-.admin-warta-modal { background:#fff; border-radius:12px; width:min(760px,calc(100vw - 48px)); max-height:calc(100vh - 48px); overflow-y:auto; padding:24px 28px; box-shadow:0 20px 60px rgba(0,0,0,0.2); display:flex; flex-direction:column; }
+.admin-warta-modal { background:#fff; border-radius:12px; width:min(900px,calc(100vw - 64px)); max-width:900px; max-height:calc(100vh - 40px); overflow-y:auto; padding:24px 28px; box-shadow:0 20px 60px rgba(0,0,0,0.2); display:flex; flex-direction:column; }
 
 .admin-warta-modal-title { font-size:20px; font-weight:700; color:#0f172a; margin:0 0 20px 0; }
 
@@ -154,7 +154,7 @@
 .admin-warta-input { width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:14px; color:#0f172a; background:#fff; transition:border-color 0.15s; box-sizing:border-box; min-height:42px; }
 .admin-warta-input:focus { outline:none; border-color:#f97316; box-shadow:0 0 0 3px rgba(249,115,22,0.12); }
 
-.admin-warta-textarea { width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:14px; color:#0f172a; background:#fff; resize:vertical; min-height:180px; font-family:inherit; box-sizing:border-box; transition:border-color 0.15s; }
+.admin-warta-textarea { width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:14px; color:#0f172a; background:#fff; resize:vertical; min-height:220px; font-family:inherit; box-sizing:border-box; transition:border-color 0.15s; }
 .admin-warta-textarea:focus { outline:none; border-color:#f97316; box-shadow:0 0 0 3px rgba(249,115,22,0.12); }
 
 .admin-warta-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
@@ -163,11 +163,11 @@
 .admin-warta-hint { font-size:12px; color:#94a3b8; margin:4px 0 0 0; line-height:1.4; }
 
 .admin-warta-image-section { margin-top:8px; }
-.admin-warta-preview { width:100%; max-width:280px; height:auto; aspect-ratio:16/9; object-fit:cover; border-radius:8px; border:1px solid #e2e8f0; display:block; }
+.admin-warta-preview { width:100%; max-width:400px; height:auto; aspect-ratio:16/9; object-fit:cover; border-radius:8px; border:1px solid #e2e8f0; display:block; }
 .admin-warta-checkbox-label { display:inline-flex; align-items:center; gap:8px; margin-top:8px; cursor:pointer; font-size:14px; color:#dc2626; font-weight:600; }
 .admin-warta-checkbox-label input[type="checkbox"] { width:16px; height:16px; accent-color:#dc2626; margin:0; }
 
-.admin-warta-placeholder { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:20px; border:1.5px dashed #d1d5db; border-radius:8px; background:#fafafa; color:#94a3b8; font-size:13px; margin-top:8px; }
+.admin-warta-placeholder { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:20px; min-height:150px; border:1.5px dashed #d1d5db; border-radius:8px; background:#fafafa; color:#94a3b8; font-size:13px; margin-top:8px; }
 
 .admin-warta-file-input { display:block; width:100%; padding:8px 0; font-size:13px; color:#475569; margin-top:8px; cursor:pointer; }
 .admin-warta-file-input::file-selector-button { padding:6px 14px; border:1px solid #d1d5db; border-radius:6px; background:#fff; color:#374151; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.15s; margin-right:10px; }
@@ -179,15 +179,17 @@
 
 .admin-warta-btn-simpan { background:#f97316; color:#fff; }
 .admin-warta-btn-simpan:hover { background:#ea580c; }
+.admin-warta-btn-simpan:disabled { background:#fdba74; cursor:not-allowed; }
 
-.admin-warta-btn-cancel { background:#fff; color:#374151; border:1.5px solid #d1d5db; }
-.admin-warta-btn-cancel:hover { background:#f9fafb; }
+.btn-cancel-warta { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:10px 20px; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer; transition:all 0.15s; min-height:42px; background:#fff; color:#374151; border:1.5px solid #d1d5db; }
+.btn-cancel-warta:hover { background:#f9fafb; }
 
 @media (max-width:640px) {
-	.admin-warta-modal { width:calc(100vw - 24px); max-height:calc(100vh - 24px); padding:20px 16px; }
+	.admin-warta-modal { width:calc(100vw - 20px); max-height:calc(100vh - 20px); padding:20px 16px; }
 	.admin-warta-row { grid-template-columns:1fr; gap:0; }
 	.admin-warta-modal-footer { flex-direction:column; }
 	.admin-warta-btn { width:100%; }
+	.btn-cancel-warta { width:100%; }
 }
 
 .dataTables_wrapper .dataTables_filter input { border:1px solid #d1d5db; border-radius:8px; padding:6px 12px; font-size:13px; margin-left:6px; }
@@ -298,6 +300,14 @@ function renderMobileCards() {
 
 function refreshTable() { table.ajax.reload(); }
 
+function closeWartaModal() {
+	$('#modal').removeClass('flex').addClass('hidden');
+	var btn = $('#btnSimpan');
+	btn.prop('disabled', false).html('Simpan');
+	$('#image').val('');
+	$('#remove_image').prop('checked', false);
+}
+
 function openModal() {
 	$('#formData')[0].reset();
 	$('#modalTitle').text('Tambah Warta');
@@ -307,12 +317,19 @@ function openModal() {
 	$('#slugWrapper').addClass('hidden');
 	$('#remove_image').prop('checked', false);
 	$('#modal').removeClass('hidden').addClass('flex');
+	$('#btnSimpan').prop('disabled', false).html('Simpan');
+	$('#image').val('');
 }
 
-function closeModal() { $('#modal').addClass('hidden'); }
+$(document).on('click', '.btn-cancel-warta', function (event) {
+	event.preventDefault();
+	closeWartaModal();
+});
 
 $("#formData").submit(function (e) {
 	e.preventDefault();
+	var btn = $('#btnSimpan');
+	btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Menyimpan...');
 	var formData = new FormData(this);
 	$.ajax({
 		url: "<?= site_url('admin/informasi/save') ?>",
@@ -325,7 +342,7 @@ $("#formData").submit(function (e) {
 				var r = typeof res === 'object' ? res : JSON.parse(res);
 				if (r.status) {
 					Swal.fire({ icon:"success", title:"Berhasil!", text:r.message||"Data berhasil disimpan.", timer:1500, showConfirmButton:false });
-					closeModal();
+					closeWartaModal();
 					table.ajax.reload();
 				} else {
 					Swal.fire({ icon:"error", title:"Gagal!", text:r.message||"Terjadi kesalahan." });
@@ -336,6 +353,9 @@ $("#formData").submit(function (e) {
 		},
 		error: function() {
 			Swal.fire({ icon:"error", title:"Gagal!", text:"Kesalahan jaringan." });
+		},
+		complete: function() {
+			btn.prop('disabled', false).html('Simpan');
 		}
 	});
 });

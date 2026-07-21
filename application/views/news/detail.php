@@ -87,11 +87,13 @@
 					</div>
 				</div>
 
-				<div class="act-container">
+			<div class="act-container">
+				<div class="act-detail-hero">
 					<figure class="act-detail-image <?= $has_news_image ? '' : 'act-detail-image-fallback'; ?>">
 						<img src="<?= html_escape($meta_image_url); ?>" alt="<?= html_escape($news->title); ?>">
 					</figure>
 				</div>
+			</div>
 
 				<div class="act-container act-detail-content">
 					<?= nl2br(html_escape($news->caption)); ?>
