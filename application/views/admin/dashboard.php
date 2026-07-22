@@ -1,21 +1,133 @@
 <!-- Dashboard Content -->
-<div class="container mx-auto px-4 py-6">
+<style>
+    .admin-dashboard-page {
+        --dashboard-surface: #1E293B;
+        --dashboard-surface-soft: #334155;
+        --dashboard-title: #F8FAFC;
+        --dashboard-text: #CBD5E1;
+        --dashboard-muted: #94A3B8;
+        --dashboard-link: #FDBA74;
+    }
+
+    .admin-dashboard-heading {
+        color: #0F172A;
+    }
+
+    .admin-dashboard-subtitle {
+        color: #475569;
+    }
+
+    .admin-public-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        min-height: 42px;
+        padding: 0.625rem 1rem;
+        border: 1px solid rgba(249, 115, 22, 0.55);
+        border-radius: 0.75rem;
+        background: #F97316;
+        color: #FFFFFF;
+        font-size: 0.875rem;
+        font-weight: 700;
+        box-shadow: 0 10px 20px -12px rgba(249, 115, 22, 0.65);
+        transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .admin-public-link:hover {
+        background: #EA580C;
+        border-color: #FB923C;
+        color: #FFFFFF;
+        transform: translateY(-1px);
+    }
+
+    .dashboard-panel,
+    .dashboard-stat-card {
+        background: var(--dashboard-surface) !important;
+        color: var(--dashboard-text);
+        border-color: rgba(148, 163, 184, 0.22);
+    }
+
+    .dashboard-panel-title,
+    .dashboard-stat-card .dashboard-stat-value {
+        color: var(--dashboard-title) !important;
+    }
+
+    .dashboard-panel-text,
+    .dashboard-stat-card .dashboard-stat-label,
+    .dashboard-table th,
+    .dashboard-table td {
+        color: var(--dashboard-text) !important;
+    }
+
+    .dashboard-panel-muted,
+    .dashboard-stat-card .dashboard-stat-muted,
+    .dashboard-table .dashboard-table-muted {
+        color: var(--dashboard-muted) !important;
+    }
+
+    .dashboard-link {
+        color: var(--dashboard-link) !important;
+    }
+
+    .dashboard-link:hover {
+        color: #FED7AA !important;
+    }
+
+    .dashboard-icon-tile {
+        background: rgba(255, 255, 255, 0.08) !important;
+    }
+
+    .dashboard-activity-item,
+    .dashboard-quick-card,
+    .dashboard-info-item {
+        background: var(--dashboard-surface-soft) !important;
+    }
+
+    .dashboard-table tr {
+        border-color: rgba(148, 163, 184, 0.22) !important;
+    }
+
+    .dashboard-table tr:hover {
+        background: rgba(51, 65, 85, 0.75) !important;
+    }
+
+    @media (max-width: 640px) {
+        .admin-dashboard-header {
+            gap: 1rem;
+        }
+
+        .admin-public-link {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="admin-dashboard-page container mx-auto px-4 py-6">
     <!-- Page Header -->
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-800 dark:text-white"><?= $title ?></h1>
-        <p class="text-gray-600 dark:text-gray-400 mt-2">Ringkasan data dan aktivitas terbaru</p>
+    <div class="admin-dashboard-header mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <h1 class="admin-dashboard-heading text-3xl font-bold"><?= $title ?></h1>
+            <p class="admin-dashboard-subtitle mt-2">Ringkasan data dan aktivitas terbaru</p>
+        </div>
+        <a href="<?= base_url('/'); ?>" target="_blank" rel="noopener noreferrer" class="admin-public-link mt-4 sm:mt-0">
+            <i class="fas fa-globe-asia"></i>
+            <span class="hidden sm:inline">Lihat Website Publik</span>
+            <span class="sm:hidden">Website</span>
+            <i class="fas fa-arrow-up-right-from-square text-xs"></i>
+        </a>
 	</div>
 	
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <?php foreach ($summary as $key => $stat): ?>
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft p-6 transition-all duration-300 hover:shadow-hard hover:-translate-y-1 border-l-4 border-<?= $stat['color'] ?>-500">
+        <div class="dashboard-stat-card rounded-xl shadow-soft p-6 transition-all duration-300 hover:shadow-hard hover:-translate-y-1 border-l-4 border-<?= $stat['color'] ?>-500">
             <div class="flex justify-between items-start">
                 <div>
-                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+                    <p class="dashboard-stat-label text-sm font-medium uppercase tracking-wider">
                         <?= ucfirst($key) ?>
 					</p>
-                    <p class="text-3xl font-bold text-gray-800 dark:text-white mt-2">
+                    <p class="dashboard-stat-value text-3xl font-bold mt-2">
                         <?= number_format($stat['total']) ?>
 					</p>
                     <?php if(isset($stat['today'])): ?>
@@ -30,12 +142,12 @@
 					</p>
                     <?php endif; ?>
 				</div>
-                <div class="p-3 bg-<?= $stat['color'] ?>-100 dark:bg-<?= $stat['color'] ?>-900 rounded-lg">
-                    <i class="<?= $stat['icon'] ?> text-<?= $stat['color'] ?>-600 dark:text-<?= $stat['color'] ?>-400 text-2xl"></i>
+                <div class="dashboard-icon-tile p-3 rounded-lg">
+                    <i class="<?= $stat['icon'] ?> text-<?= $stat['color'] ?>-400 text-2xl"></i>
 				</div>
 			</div>
             <a href="<?= $stat['link'] ?>" 
-			class="mt-4 inline-flex items-center text-sm font-medium text-<?= $stat['color'] ?>-600 hover:text-<?= $stat['color'] ?>-800">
+			class="dashboard-link mt-4 inline-flex items-center text-sm font-medium">
                 Lihat detail
                 <i class="fas fa-arrow-right ml-1"></i>
 			</a>
@@ -46,21 +158,21 @@
     <!-- Charts and Recent Activity -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Chart Section -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft p-6">
-            <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+        <div class="dashboard-panel rounded-xl shadow-soft p-6">
+            <h3 class="dashboard-panel-title text-lg font-semibold mb-4">
                 <i class="fas fa-chart-line mr-2"></i>Statistik Pertumbuhan
 			</h3>
             <div class="space-y-6">
                 <!-- Relawan Chart -->
                 <div>
-                    <h4 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Relawan per Bulan</h4>
+                    <h4 class="dashboard-panel-text text-sm font-medium mb-2">Relawan per Bulan</h4>
                     <div class="h-48">
                         <canvas id="relawanChart"></canvas>
 					</div>
 				</div>
                 <!-- Informasi Chart -->
                 <div>
-                    <h4 class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Informasi per Bulan</h4>
+                    <h4 class="dashboard-panel-text text-sm font-medium mb-2">Informasi per Bulan</h4>
                     <div class="h-48">
                         <canvas id="informasiChart"></canvas>
 					</div>
@@ -69,34 +181,34 @@
 		</div>
 		
         <!-- Recent Activity -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft p-6">
+        <div class="dashboard-panel rounded-xl shadow-soft p-6">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">
+                <h3 class="dashboard-panel-title text-lg font-semibold">
                     <i class="fas fa-history mr-2"></i>Aktivitas Terbaru
 				</h3>
-                <a href="#" class="text-sm text-primary-600 hover:text-primary-800">Lihat semua</a>
+                <a href="#" class="dashboard-link text-sm">Lihat semua</a>
 			</div>
             
             <div class="space-y-4">
                 <?php if(empty($recent_activities)): ?>
                 <div class="text-center py-8">
                     <i class="fas fa-inbox text-4xl text-gray-300 dark:text-gray-600 mb-3"></i>
-                    <p class="text-gray-500 dark:text-gray-400">Belum ada aktivitas</p>
+                    <p class="dashboard-panel-muted">Belum ada aktivitas</p>
 				</div>
                 <?php else: ?>
                 <?php foreach($recent_activities as $activity): ?>
-                <div class="flex items-start space-x-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                    <div class="flex-shrink-0 w-10 h-10 bg-<?= $activity['color'] ?>-100 dark:bg-<?= $activity['color'] ?>-900 rounded-full flex items-center justify-center">
-                        <i class="<?= $activity['icon'] ?> text-<?= $activity['color'] ?>-600 dark:text-<?= $activity['color'] ?>-400"></i>
+                <div class="dashboard-activity-item flex items-start space-x-3 p-3 rounded-lg transition-colors">
+                    <div class="dashboard-icon-tile flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center">
+                        <i class="<?= $activity['icon'] ?> text-<?= $activity['color'] ?>-400"></i>
 					</div>
                     <div class="flex-1">
-                        <p class="text-sm font-medium text-gray-800 dark:text-white">
+                        <p class="dashboard-panel-title text-sm font-medium">
                             <?= $activity['title'] ?>
 						</p>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        <p class="dashboard-panel-text text-sm mt-1">
                             <?= $activity['description'] ?>
 						</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                        <p class="dashboard-panel-muted text-xs mt-2">
                             <i class="far fa-clock mr-1"></i>
                             <?= $activity['time'] ?>
 						</p>
@@ -109,28 +221,28 @@
 	</div>
 	
     <!-- Quick Stats -->
-    <div class="mt-8 bg-white dark:bg-gray-800 rounded-xl shadow-soft p-6">
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+    <div class="dashboard-panel mt-8 rounded-xl shadow-soft p-6">
+        <h3 class="dashboard-panel-title text-lg font-semibold mb-4">
             <i class="fas fa-tachometer-alt mr-2"></i>Statistik Cepat
 		</h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                <div class="text-3xl font-bold text-primary-600 dark:text-primary-400 mb-2">
+            <div class="dashboard-quick-card text-center p-4 rounded-lg">
+                <div class="text-3xl font-bold text-white mb-2">
                     <?= number_format($summary['relawan']['total']) ?>
 				</div>
-                <p class="text-sm text-gray-600 dark:text-gray-400">Total Relawan</p>
+                <p class="dashboard-panel-text text-sm">Total Relawan</p>
 			</div>
-            <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                <div class="text-3xl font-bold text-success dark:text-green-400 mb-2">
+            <div class="dashboard-quick-card text-center p-4 rounded-lg">
+                <div class="text-3xl font-bold text-green-300 mb-2">
                     <?= number_format($summary['slider']['active']) ?>
 				</div>
-                <p class="text-sm text-gray-600 dark:text-gray-400">Slider Aktif</p>
+                <p class="dashboard-panel-text text-sm">Slider Aktif</p>
 			</div>
-            <div class="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                <div class="text-3xl font-bold text-warning dark:text-yellow-400 mb-2">
+            <div class="dashboard-quick-card text-center p-4 rounded-lg">
+                <div class="text-3xl font-bold text-orange-300 mb-2">
                     <?= number_format($summary['users']['active']) ?>
 				</div>
-                <p class="text-sm text-gray-600 dark:text-gray-400">User Aktif</p>
+                <p class="dashboard-panel-text text-sm">User Aktif</p>
 			</div>
 		</div>
 	</div>
@@ -138,17 +250,17 @@
     <!-- System Overview -->
     <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Recent Relawan -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft p-6">
-            <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+        <div class="dashboard-panel rounded-xl shadow-soft p-6">
+            <h3 class="dashboard-panel-title text-lg font-semibold mb-4">
                 <i class="fas fa-users mr-2"></i>Relawan Terbaru
 			</h3>
             <div class="overflow-x-auto">
-                <table class="w-full text-sm">
+                <table class="dashboard-table w-full text-sm">
                     <thead>
                         <tr class="border-b dark:border-gray-700">
-                            <th class="py-2 text-left text-gray-600 dark:text-gray-400">Nama</th>
-                            <th class="py-2 text-left text-gray-600 dark:text-gray-400">Telepon</th>
-                            <th class="py-2 text-left text-gray-600 dark:text-gray-400">Tanggal</th>
+                            <th class="py-2 text-left">Nama</th>
+                            <th class="py-2 text-left">Telepon</th>
+                            <th class="py-2 text-left">Tanggal</th>
 						</tr>
 					</thead>
                     <tbody>
@@ -159,14 +271,14 @@
 						?>
                         <?php if(empty($relawan)): ?>
                         <tr>
-                            <td colspan="3" class="py-4 text-center text-gray-500">Belum ada relawan</td>
+                            <td colspan="3" class="dashboard-table-muted py-4 text-center">Belum ada relawan</td>
 						</tr>
                         <?php else: ?>
                         <?php foreach($relawan as $r): ?>
-                        <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <tr class="border-b">
                             <td class="py-3"><?= htmlspecialchars($r->nama) ?></td>
                             <td class="py-3"><?= htmlspecialchars($r->telepon) ?></td>
-                            <td class="py-3 text-gray-500"><?= date('d/m/Y', strtotime($r->created_at)) ?></td>
+                            <td class="dashboard-table-muted py-3"><?= date('d/m/Y', strtotime($r->created_at)) ?></td>
 						</tr>
                         <?php endforeach; ?>
                         <?php endif; ?>
@@ -174,15 +286,15 @@
 				</table>
 			</div>
             <a href="<?= site_url('admin/relawan') ?>" 
-			class="mt-4 inline-flex items-center text-sm font-medium text-primary-600 hover:text-primary-800">
+			class="dashboard-link mt-4 inline-flex items-center text-sm font-medium">
                 Lihat semua relawan
                 <i class="fas fa-arrow-right ml-1"></i>
 			</a>
 		</div>
 		
         <!-- Recent Informasi -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-soft p-6">
-            <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+        <div class="dashboard-panel rounded-xl shadow-soft p-6">
+            <h3 class="dashboard-panel-title text-lg font-semibold mb-4">
                 <i class="fas fa-newspaper mr-2"></i>Informasi Terbaru
 			</h3>
             <div class="space-y-3">
@@ -193,14 +305,14 @@
 				?>
                 <?php if(empty($informasi)): ?>
                 <div class="text-center py-4">
-                    <p class="text-gray-500">Belum ada informasi</p>
+                    <p class="dashboard-panel-muted">Belum ada informasi</p>
 				</div>
                 <?php else: ?>
                 <?php foreach($informasi as $info): ?>
-                <div class="p-3 border-l-4 border-success dark:border-green-500 bg-gray-50 dark:bg-gray-700 rounded">
-                    <h4 class="font-medium text-gray-800 dark:text-white"><?= htmlspecialchars($info->title) ?></h4>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 truncate"><?= htmlspecialchars($info->caption) ?></p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                <div class="dashboard-info-item p-3 border-l-4 border-success dark:border-green-500 rounded">
+                    <h4 class="dashboard-panel-title font-medium"><?= htmlspecialchars($info->title) ?></h4>
+                    <p class="dashboard-panel-text text-sm mt-1 truncate"><?= htmlspecialchars($info->caption) ?></p>
+                    <p class="dashboard-panel-muted text-xs mt-2">
                         <i class="far fa-clock mr-1"></i>
                         <?= date('d/m/Y H:i', strtotime($info->create_at)) ?>
 					</p>
@@ -209,7 +321,7 @@
                 <?php endif; ?>
 			</div>
             <a href="<?= site_url('admin/informasi') ?>" 
-			class="mt-4 inline-flex items-center text-sm font-medium text-primary-600 hover:text-primary-800">
+			class="dashboard-link mt-4 inline-flex items-center text-sm font-medium">
                 Lihat semua informasi
                 <i class="fas fa-arrow-right ml-1"></i>
 			</a>
@@ -220,6 +332,29 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 	$(document).ready(function() {
+		const dashboardChartScales = function() {
+			return {
+				x: {
+					ticks: {
+						color: '#CBD5E1'
+					},
+					grid: {
+						color: 'rgba(148, 163, 184, 0.15)'
+					}
+				},
+				y: {
+					beginAtZero: true,
+					ticks: {
+						color: '#CBD5E1',
+						precision: 0
+					},
+					grid: {
+						color: 'rgba(148, 163, 184, 0.15)'
+					}
+				}
+			};
+		};
+
 		// Relawan Chart
 		const relawanCtx = document.getElementById('relawanChart').getContext('2d');
 		const relawanChart = new Chart(relawanCtx, {
@@ -243,14 +378,7 @@
 						display: false
 					}
 				},
-				scales: {
-					y: {
-						beginAtZero: true,
-						ticks: {
-							precision: 0
-						}
-					}
-				}
+				scales: dashboardChartScales()
 			}
 		});
 		
@@ -276,14 +404,7 @@
 						display: false
 					}
 				},
-				scales: {
-					y: {
-						beginAtZero: true,
-						ticks: {
-							precision: 0
-						}
-					}
-				}
+				scales: dashboardChartScales()
 			}
 		});
 		
@@ -307,4 +428,3 @@
 		}, 30000);
 	});
 </script> <!-- Dashboard Content -->
- 
