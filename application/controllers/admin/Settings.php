@@ -109,13 +109,21 @@
 			if ($this->upload->do_upload($field_name)) {
 				$upload_data = $this->upload->data();
 				
-				// Resize untuk logo jika perlu
 				if($type == 'logo'){
-					$this->resize_image($upload_data['full_path'], 200, 60);
+					$processed = $this->process_logo_image($upload_data['full_path']);
 				} 
-				// Resize untuk icon jika perlu
 				elseif($type == 'icon' && strtolower($upload_data['file_ext']) !== '.ico'){
-					$this->resize_image($upload_data['full_path'], 64, 64);
+					$processed = $this->resize_image($upload_data['full_path'], 128, 128);
+				} else {
+					$processed = true;
+				}
+
+				if (!$processed) {
+					if (is_file($upload_data['full_path'])) {
+						@unlink($upload_data['full_path']);
+					}
+					$this->session->set_flashdata('error', 'Gagal memproses gambar ' . $type . '.');
+					return false;
 				}
 				
 				return 'uploads/' . $upload_data['file_name'];
@@ -129,7 +137,28 @@
 		}
 		
 		/**
-			* Resize image jika perlu
+			* Resize logo hanya jika dimensinya terlalu besar.
+		*/
+		private function process_logo_image($file_path){
+			$image_info = @getimagesize($file_path);
+			if (!$image_info) {
+				log_message('error', 'Logo processing failed: invalid image file.');
+				return false;
+			}
+
+			$width = (int) $image_info[0];
+			$height = (int) $image_info[1];
+			$max_dimension = 1600;
+
+			if ($width <= $max_dimension && $height <= $max_dimension) {
+				return true;
+			}
+
+			return $this->resize_image($file_path, $max_dimension, $max_dimension);
+		}
+
+		/**
+			* Resize image dengan rasio tetap.
 		*/
 		private function resize_image($file_path, $width, $height){
 			$config['image_library'] = 'gd2';
@@ -138,6 +167,7 @@
 			$config['width'] = $width;
 			$config['height'] = $height;
 			$config['quality'] = '90%';
+			$config['create_thumb'] = FALSE;
 			
 			$this->load->library('image_lib', $config);
 			$this->image_lib->initialize($config);
@@ -159,5 +189,6 @@
 			}
 			
 			$this->image_lib->clear();
+			return $result;
 		}
 	}
