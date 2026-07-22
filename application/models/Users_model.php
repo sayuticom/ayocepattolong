@@ -55,7 +55,17 @@
 		
 		public function find_by_username($u)
 		{
-			return $this->db->get_where($this->table, ['username'=>$u])->row();
+			return $this->db->get_where($this->table, ['username' => strtolower(trim((string) $u))])->row();
+		}
+
+		public function is_username_unique($username, $exclude_id = null)
+		{
+			$this->db->where('username', strtolower(trim((string) $username)));
+			if ($exclude_id !== null && $exclude_id !== '') {
+				$this->db->where('id !=', (int) $exclude_id);
+			}
+
+			return $this->db->count_all_results($this->table) === 0;
 		}
 		
 		public function get($id)

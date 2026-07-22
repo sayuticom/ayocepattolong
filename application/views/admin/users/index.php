@@ -9,7 +9,7 @@
             <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
                 <th class="px-3 py-2">No</th>
                 <th class="px-3 py-2">Username</th>
-                <th class="px-3 py-2">Fullname</th>
+                <th class="px-3 py-2">Nama</th>
                 <th class="px-3 py-2">Role</th>
                 <th class="px-3 py-2">Status</th>
                 <th class="px-3 py-2">Aksi</th>
@@ -29,12 +29,15 @@
             <input type="hidden" name="id" id="id">
 			
             <label>Username</label>
-            <input type="text" name="username" id="username" class="w-full border p-2 rounded mb-2">
+            <input type="text" name="username" id="username" autocomplete="username" maxlength="100" required
+            pattern="[a-z0-9._-]{3,100}" class="w-full border p-2 rounded mb-1">
+            <p class="text-xs text-gray-500 mb-2">Gunakan huruf kecil, angka, titik, garis bawah, atau tanda minus.</p>
 			
-            <label>Password (optional)</label>
+            <label>Password</label>
+            <p class="text-xs text-gray-500 mb-1">Wajib saat tambah user. Kosongkan saat edit jika tidak ingin mengganti password.</p>
             <input type="password" name="password" id="password" class="w-full border p-2 rounded mb-2">
 			
-            <label>Fullname</label>
+            <label>Nama</label>
             <input type="text" name="fullname" id="fullname" class="w-full border p-2 rounded mb-2">
 			
             <label>Role</label>
@@ -101,6 +104,8 @@
 	
 	function addUser() {
 		$('#formUser')[0].reset();
+		$('#id').val('');
+		$('#password').prop('required', true);
 		$('#modalTitle').text("Tambah User");
 		$('#userModal').removeClass('hidden');
 	}
@@ -119,6 +124,7 @@
 					$('#fullname').val(data.fullname);
 					$('#role_id').val(data.role_id);
 					$('#is_active').val(data.is_active ? '1' : '0');
+					$('#password').val('').prop('required', false);
 					
 					$('#modalTitle').text("Edit User");
 					$('#userModal').removeClass('hidden');
@@ -153,12 +159,26 @@
 	function closeModal() {
 		$('#userModal').addClass('hidden');
 	}
+
+	$('#username').on('input', function() {
+		this.value = this.value.toLowerCase();
+	});
 	
 	$('#formUser').submit(function(e){
 		e.preventDefault();
-		$.post(base_url + "save", $(this).serialize(), function(res){
-			$('#userModal').addClass('hidden');
-			$('#userTable').DataTable().ajax.reload();
+		const usernameInput = $('#username');
+		usernameInput.val(usernameInput.val().trim().toLowerCase());
+		$.post(base_url + "admin/users/save", $(this).serialize(), function(res){
+			const response = typeof res === 'object' ? res : JSON.parse(res);
+			if (response.status) {
+				$('#userModal').addClass('hidden');
+				$('#userTable').DataTable().ajax.reload();
+				Swal.fire('Berhasil!', response.message || 'User berhasil disimpan.', 'success');
+			} else {
+				Swal.fire('Gagal!', response.message || 'User gagal disimpan.', 'error');
+			}
+		}).fail(function() {
+			Swal.fire('Gagal!', 'Terjadi kesalahan saat menyimpan user.', 'error');
 		});
 	});
 	

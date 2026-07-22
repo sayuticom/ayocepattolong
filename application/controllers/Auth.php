@@ -14,7 +14,7 @@
 			];
 
 			if($this->input->method() == 'post'){
-				$u = $this->input->post('username');
+				$u = strtolower(trim((string) $this->input->post('username')));
 				$p = $this->input->post('password');
 				$user = $this->Users_model->find_by_username($u);
 				// print_r($user->password);
@@ -31,7 +31,7 @@
  
 					redirect('admin/dashboard');
 					} else {
-					$data['error'] = 'Username atau password salah';
+					$data['error'] = 'Username atau password salah.';
 					$this->load->view('auth/login', $data);
 				}
 				return;

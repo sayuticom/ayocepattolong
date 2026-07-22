@@ -31,13 +31,13 @@
                 '<span class="px-2 py-1 rounded bg-red-500 text-white text-xs">Inactive</span>';
 				
 				$row[] = $no;
-				$row[] = $user->username;
-				$row[] = $user->fullname;
+				$row[] = html_escape($user->username);
+				$row[] = html_escape($user->fullname);
 				$row[] = $user->role_id == 1 ? 'Admin' : 'Staff';
 				$row[] = $badge;
 				$row[] = '
-                <button onclick="editUser('.$user->id.')" class="px-3 py-1 bg-yellow-500 text-white rounded text-xs">Edit</button>
-                <button onclick="deleteUser('.$user->id.')" class="px-3 py-1 bg-red-600 text-white rounded text-xs">Delete</button>
+                <button onclick="editUser('.(int) $user->id.')" class="px-3 py-1 bg-yellow-500 text-white rounded text-xs">Edit</button>
+                <button onclick="deleteUser('.(int) $user->id.')" class="px-3 py-1 bg-red-600 text-white rounded text-xs">Delete</button>
 				';
 				
 				$data[] = $row;
@@ -55,6 +55,7 @@
 			$user = $this->Users_model->get($id);
 			
 			if ($user) {
+				unset($user->password);
 				$this->output
 				->set_content_type('application/json')
 				->set_output(json_encode([
@@ -74,29 +75,67 @@
 		public function save()
 		{
 			$id = $this->input->post('id');
+			$username = strtolower(trim((string) $this->input->post('username')));
+			$password = (string) $this->input->post('password');
+			$role_id = (int) $this->input->post('role_id');
+			$is_active = (string) $this->input->post('is_active');
+			$errors = [];
+
+			if ($username === '') {
+				$errors[] = 'Username wajib diisi.';
+			} elseif (strlen($username) < 3) {
+				$errors[] = 'Username minimal 3 karakter.';
+			} elseif (strlen($username) > 100 || !preg_match('/^[a-z0-9._-]+$/', $username)) {
+				$errors[] = 'Username hanya boleh berisi huruf kecil, angka, titik, garis bawah, dan tanda minus.';
+			} elseif (!$this->Users_model->is_username_unique($username, $id)) {
+				$errors[] = 'Username sudah digunakan.';
+			}
+
+			if ($id === '' && $password === '') {
+				$errors[] = 'Password wajib diisi untuk user baru.';
+			}
+
+			if (!in_array($role_id, [1, 2], true)) {
+				$errors[] = 'Role tidak valid.';
+			}
+
+			if (!in_array($is_active, ['0', '1'], true)) {
+				$errors[] = 'Status tidak valid.';
+			}
+
+			if (!empty($errors)) {
+				echo json_encode([
+					'status' => false,
+					'message' => implode(' ', $errors)
+				]);
+				return;
+			}
 			
 			$data = [
-            'username' => $this->input->post('username'),
-            'fullname' => $this->input->post('fullname'),
-            'role_id' => $this->input->post('role_id'),
-            'is_active' => $this->input->post('is_active'),
+            'username' => $username,
+            'fullname' => trim((string) $this->input->post('fullname', TRUE)),
+            'role_id' => $role_id,
+            'is_active' => (int) $is_active,
 			];
 			
-			if ($this->input->post('password')) {
-				$data['password'] = password_hash($this->input->post('password'), PASSWORD_BCRYPT);
+			if ($password !== '') {
+				$data['password'] = password_hash($password, PASSWORD_BCRYPT);
 			}
 			
 			if ($id)
-            $this->Users_model->update($id, $data);
+            $saved = $this->Users_model->update($id, $data);
 			else
-            $this->Users_model->insert($data);
+            $saved = $this->Users_model->insert($data);
 			
-			echo json_encode(['status'=>true]);
+			echo json_encode([
+				'status' => (bool) $saved,
+				'message' => $saved ? 'User berhasil disimpan.' : 'User gagal disimpan.'
+			]);
 		}
 		
 		public function delete($id) {
 			// Cek apakah user bisa dihapus
-			$user = $this->User_model->get($id);
+			$user = $this->Users_model->get($id);
 			
 			if (!$user) {
 				echo json_encode([

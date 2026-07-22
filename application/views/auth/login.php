@@ -29,15 +29,21 @@
 					<?= $this->session->flashdata('error') ?>
 				</div>
 				<?php endif; ?>
+
+				<?php if (!empty($error)): ?>
+				<div class="bg-red-100 text-red-700 p-3 rounded mb-4">
+					<?= html_escape($error) ?>
+				</div>
+				<?php endif; ?>
 				
 				<form action="<?= site_url('auth/login') ?>" method="POST">
 					
 					<label class="block mb-2 text-sm font-medium">Username</label>
-					<input type="text" name="username" required
+					<input type="text" name="username" autocomplete="username" required
 					class="w-full border px-3 py-2 rounded mb-4 focus:ring focus:ring-blue-300">
 					
 					<label class="block mb-2 text-sm font-medium">Password</label>
-					<input type="password" name="password" required
+					<input type="password" name="password" autocomplete="current-password" required
 					class="w-full border px-3 py-2 rounded mb-4 focus:ring focus:ring-blue-300">
 					
 					<button type="submit"
