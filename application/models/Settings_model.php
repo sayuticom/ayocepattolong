@@ -2,6 +2,7 @@
 	defined('BASEPATH') OR exit('No direct script access allowed');
 	
 	class Settings_model extends CI_Model {
+		private $app_fields = ['app_name', 'site_desc', 'site_key', 'wa_number', 'app_logo', 'app_icon'];
 		
 		public function __construct(){
 			parent::__construct();
@@ -10,17 +11,16 @@
 		public function get(){
 			$data = new stdClass();
 
-			$q1 = $this->db->get('settings');
-			if ($q1->num_rows() > 0) {
-				foreach ($q1->row() as $key => $val) {
-					$data->$key = $val;
+			foreach (['settings', 'settingss'] as $table) {
+				if (!$this->db->table_exists($table)) {
+					continue;
 				}
-			}
 
-			$q2 = $this->db->get('settingss');
-			if ($q2->num_rows() > 0) {
-				foreach ($q2->row() as $key => $val) {
-					$data->$key = $val;
+				$query = $this->db->limit(1)->get($table);
+				if ($query->num_rows() > 0) {
+					foreach ($query->row() as $key => $val) {
+						$data->$key = $val;
+					}
 				}
 			}
 
@@ -28,25 +28,56 @@
 		}
 		
 		public function update($data){
-			$existing = $this->db->get('settings')->row();
-			if ($existing) {
-				$this->db->where('id', $existing->id)->update('settings', $data);
-			} else {
-				$this->db->insert('settings', $data);
+			if (!$this->db->table_exists('settings')) {
+				return false;
 			}
+
+			$data = $this->filter_existing_fields('settings', $data);
+			if (empty($data)) {
+				return false;
+			}
+
+			$existing = $this->db->limit(1)->get('settings')->row();
+			if ($existing) {
+				return $this->db->where('id', $existing->id)->update('settings', $data);
+			}
+
+			return $this->db->insert('settings', $data);
 		}
 
 		public function update_app($data){
-			$existing = $this->db->get('settingss')->row();
-			if ($existing) {
-				$this->db->where('id', $existing->id)->update('settingss', $data);
-			} else {
-				$this->db->insert('settingss', $data);
+			$table = $this->resolve_app_table();
+			if (!$table) {
+				log_message('error', 'Settings update failed: no settings table contains app fields.');
+				return false;
 			}
+
+			$data = $this->filter_existing_fields($table, $data);
+			if (empty($data)) {
+				log_message('error', 'Settings update failed: no submitted fields exist in table ' . $table);
+				return false;
+			}
+
+			$existing = $this->db->limit(1)->get($table)->row();
+			if ($existing) {
+				$id_field = isset($existing->id) ? 'id' : null;
+				if ($id_field) {
+					return $this->db->where($id_field, $existing->$id_field)->update($table, $data);
+				}
+
+				return $this->db->limit(1)->update($table, $data);
+			}
+
+			return $this->db->insert($table, $data);
 		}
 		
 		public function get_logo_path(){
-			$query = $this->db->select('app_logo')->get('settingss');
+			$table = $this->resolve_app_table();
+			if (!$table || !$this->db->field_exists('app_logo', $table)) {
+				return null;
+			}
+
+			$query = $this->db->select('app_logo')->limit(1)->get($table);
 			if($query->num_rows() > 0){
 				$row = $query->row();
 				return !empty($row->app_logo) ? $row->app_logo : null;
@@ -55,11 +86,43 @@
 		}
 		
 		public function get_icon_path(){
-			$query = $this->db->select('app_icon')->get('settingss');
+			$table = $this->resolve_app_table();
+			if (!$table || !$this->db->field_exists('app_icon', $table)) {
+				return null;
+			}
+
+			$query = $this->db->select('app_icon')->limit(1)->get($table);
 			if($query->num_rows() > 0){
 				$row = $query->row();
 				return !empty($row->app_icon) ? $row->app_icon : null;
 			}
 			return null;
+		}
+
+		private function resolve_app_table(){
+			foreach (['settingss', 'settings'] as $table) {
+				if (!$this->db->table_exists($table)) {
+					continue;
+				}
+
+				foreach ($this->app_fields as $field) {
+					if ($this->db->field_exists($field, $table)) {
+						return $table;
+					}
+				}
+			}
+
+			return false;
+		}
+
+		private function filter_existing_fields($table, $data){
+			$filtered = [];
+			foreach ($data as $key => $value) {
+				if ($this->db->field_exists($key, $table)) {
+					$filtered[$key] = $value;
+				}
+			}
+
+			return $filtered;
 		}
 	}

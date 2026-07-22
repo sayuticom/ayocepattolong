@@ -6,8 +6,18 @@
         <?= $this->session->flashdata('success') ?>
 	</div>
     <?php endif; ?>
+
+    <?php if ($this->session->flashdata('error')): ?>
+    <div class="bg-red-100 text-red-800 px-4 py-3 rounded mb-4">
+        <?= $this->session->flashdata('error') ?>
+	</div>
+    <?php endif; ?>
     
-    <form action="<?= site_url('admin/settings/update') ?>" method="post" enctype="multipart/form-data" class="space-y-6">
+    <form id="settingsForm" action="<?= site_url('admin/settings/update') ?>" method="post" enctype="multipart/form-data" class="space-y-6">
+        <?php if ($this->config->item('csrf_protection')): ?>
+        <input type="hidden" name="<?= $this->security->get_csrf_token_name() ?>" value="<?= $this->security->get_csrf_hash() ?>">
+        <?php endif; ?>
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
                 <label for="app_name" class="block font-medium mb-1">Nama Website</label>
@@ -41,9 +51,9 @@
             <div>
                 <label for="app_logo" class="block font-medium mb-1">
                     Logo Aplikasi
-                    <span class="text-sm text-gray-500">(PNG/JPG max 2MB, recommended: 200x60px)</span>
+                    <span class="text-sm text-gray-500">(PNG/JPG/WebP max 2MB, recommended: 200x60px)</span>
 				</label>
-                <input type="file" name="app_logo" id="app_logo" accept=".png,.jpg,.jpeg" class="block w-full border border-gray-300 rounded px-3 py-2">
+                <input type="file" name="app_logo" id="app_logo" accept=".png,.jpg,.jpeg,.webp" class="block w-full border border-gray-300 rounded px-3 py-2">
                 
                 <?php if (!empty($settings->app_logo)): ?>
                 <div class="mt-3">
@@ -58,9 +68,9 @@
             <div>
                 <label for="app_icon" class="block font-medium mb-1">
                     Favicon/App Icon
-                    <span class="text-sm text-gray-500">(ICO/PNG max 1MB, recommended: 32x32px atau 64x64px)</span>
+                    <span class="text-sm text-gray-500">(ICO/PNG/JPG/WebP max 1MB, recommended: 32x32px atau 64x64px)</span>
 				</label>
-                <input type="file" name="app_icon" id="app_icon" accept=".ico,.png,.jpg,.jpeg" class="block w-full border border-gray-300 rounded px-3 py-2">
+                <input type="file" name="app_icon" id="app_icon" accept=".ico,.png,.jpg,.jpeg,.webp" class="block w-full border border-gray-300 rounded px-3 py-2">
                 
                 <?php if (!empty($settings->app_icon)): ?>
                 <div class="mt-3">
@@ -102,8 +112,8 @@
         <?php endif; ?>
         
         <div class="flex justify-end pt-4 border-t">
-            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded transition-colors duration-200">
-                <i class="fas fa-save mr-2"></i>Simpan Perubahan
+            <button type="submit" id="settingsSubmit" class="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed text-white font-semibold px-6 py-2 rounded transition-colors duration-200">
+                <i class="fas fa-save mr-2"></i>Simpan Pengaturan
 			</button>
 		</div>
 	</form>
@@ -111,6 +121,12 @@
 
 <!-- JavaScript untuk preview image -->
 <script>
+    document.getElementById('settingsForm').addEventListener('submit', function() {
+        const button = document.getElementById('settingsSubmit');
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Menyimpan...';
+    });
+
     // Preview untuk app_logo
     document.getElementById('app_logo').addEventListener('change', function(e) {
         if (e.target.files && e.target.files[0]) {
