@@ -9,6 +9,8 @@
 	$icon_file = !empty($settings->app_icon) ? basename($settings->app_icon) : '';
 	$logo_path = ($logo_file && is_file(FCPATH . 'uploads' . DIRECTORY_SEPARATOR . $logo_file)) ? 'uploads/' . $logo_file : 'uploads/act_logo.png';
 	$icon_path = ($icon_file && is_file(FCPATH . 'uploads' . DIRECTORY_SEPARATOR . $icon_file)) ? 'uploads/' . $icon_file : 'uploads/icon.png';
+	$hero_file = !empty($settings->hero_image) ? basename($settings->hero_image) : '';
+	$settings_hero_image = ($hero_file && is_file(FCPATH . 'uploads' . DIRECTORY_SEPARATOR . 'hero' . DIRECTORY_SEPARATOR . $hero_file)) ? base_url('uploads/hero/' . $hero_file) : '';
 
 	if (!function_exists('act_text_limit')) {
 		function act_text_limit($text, $limit = 160)
@@ -67,7 +69,7 @@
 		}
 	}
 
-	$hero_image = !empty($slider_items) ? $slider_items[0]['image'] : (file_exists(FCPATH . 'uploads/lautan-kayu-di-aceh-tamiang.webp') ? base_url('uploads/lautan-kayu-di-aceh-tamiang.webp') : base_url($logo_path));
+	$hero_image = $settings_hero_image ?: (file_exists(FCPATH . 'uploads/lautan-kayu-di-aceh-tamiang.webp') ? base_url('uploads/lautan-kayu-di-aceh-tamiang.webp') : base_url($logo_path));
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -142,7 +144,7 @@
 						</div>
 					</div>
 					<div class="act-hero-media">
-						<img src="<?= $hero_image ?>" alt="Dokumentasi kegiatan kemanusiaan">
+						<img src="<?= $hero_image ?>" alt="Aksi kemanusiaan Ayo Cepat Tolong">
 					</div>
 				</div>
 			</section>

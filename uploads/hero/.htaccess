@@ -1,0 +1,5 @@
+# Block PHP execution
+<FilesMatch "\.(php|phtml|php3|php4|php5|php7|pht|phar|inc|suspected|cgi|pl|py|sh|bash|exe|dll|bat|cmd|com)$">
+    Deny from all
+    Require all denied
+</FilesMatch>

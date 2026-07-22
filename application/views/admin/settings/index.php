@@ -1,3 +1,10 @@
+<?php
+    $hero_fallback = is_file(FCPATH . 'uploads/lautan-kayu-di-aceh-tamiang.webp')
+        ? 'uploads/lautan-kayu-di-aceh-tamiang.webp'
+        : (isset($settings->app_logo) ? $settings->app_logo : '');
+    $hero_preview = !empty($settings->hero_image) ? $settings->hero_image : $hero_fallback;
+    $supports_hero_image = !empty($settings->supports_hero_image);
+?>
 <div class="container mx-auto px-4 py-8 bg-white">
     <h1 class="text-2xl font-semibold mb-6">Pengaturan Aplikasi</h1>
     
@@ -88,6 +95,43 @@
                 <?php endif; ?>
 			</div>
 		</div>
+
+        <div class="mt-6 border border-gray-200 rounded-lg p-4">
+            <div class="flex flex-col lg:flex-row lg:items-start gap-6">
+                <div class="flex-1">
+                    <label for="hero_image" class="block font-medium mb-1">Gambar Hero Beranda</label>
+                    <p class="text-sm text-gray-500 mb-3">
+                        Format JPG, PNG, atau WebP. Disarankan rasio landscape sekitar 16:9. Ukuran ideal minimal 1200 x 675 piksel. Maksimal 15 MB sebelum kompresi.
+                    </p>
+                    <?php if ($supports_hero_image): ?>
+                    <input type="file" name="hero_image" id="hero_image" accept="image/jpeg,image/png,image/webp" class="block w-full border border-gray-300 rounded px-3 py-2">
+                    <?php if (!empty($settings->hero_image)): ?>
+                    <label class="inline-flex items-center gap-2 mt-3 text-sm text-gray-700">
+                        <input type="checkbox" name="remove_hero_image" value="1" class="rounded border-gray-300">
+                        Hapus gambar hero saat ini
+                    </label>
+                    <?php endif; ?>
+                    <?php else: ?>
+                    <div class="p-3 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800">
+                        Kolom hero_image belum tersedia. Jalankan SQL migrasi sebelum upload gambar hero.
+                    </div>
+                    <?php endif; ?>
+                </div>
+                <div class="w-full lg:w-[420px]">
+                    <p class="text-sm text-gray-600 mb-2"><?= !empty($settings->hero_image) ? 'Gambar hero saat ini:' : 'Preview fallback hero:' ?></p>
+                    <?php if (!empty($hero_preview)): ?>
+                    <div class="w-full aspect-[16/9] max-h-[235px] overflow-hidden rounded-lg border border-gray-200 bg-gray-100">
+                        <img id="heroImagePreview" src="<?= base_url($hero_preview) ?>" alt="Preview gambar hero" class="w-full h-full object-cover">
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1"><?= html_escape($hero_preview) ?></p>
+                    <?php else: ?>
+                    <div id="heroImagePreviewPlaceholder" class="w-full aspect-[16/9] max-h-[235px] flex items-center justify-center rounded-lg border border-dashed border-gray-300 bg-gray-50 text-sm text-gray-500">
+                        Belum ada gambar hero
+                    </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
         
         <!-- Preview Section -->
         <?php if (!empty($settings->app_logo) || !empty($settings->app_icon)): ?>
@@ -178,4 +222,27 @@
             reader.readAsDataURL(e.target.files[0]);
 		}
 	});
+
+    const heroInput = document.getElementById('hero_image');
+    if (heroInput) {
+        heroInput.addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    let preview = document.getElementById('heroImagePreview');
+                    if (!preview) {
+                        const placeholder = document.getElementById('heroImagePreviewPlaceholder');
+                        if (placeholder) {
+                            placeholder.outerHTML = '<div class="w-full aspect-[16/9] max-h-[235px] overflow-hidden rounded-lg border border-gray-200 bg-gray-100"><img id="heroImagePreview" src="" alt="Preview gambar hero" class="w-full h-full object-cover"></div>';
+                            preview = document.getElementById('heroImagePreview');
+                        }
+                    }
+                    if (preview) {
+                        preview.src = e.target.result;
+                    }
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+    }
 </script>

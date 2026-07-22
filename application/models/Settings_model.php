@@ -2,7 +2,7 @@
 	defined('BASEPATH') OR exit('No direct script access allowed');
 	
 	class Settings_model extends CI_Model {
-		private $app_fields = ['app_name', 'site_desc', 'site_key', 'wa_number', 'app_logo', 'app_icon'];
+		private $app_fields = ['app_name', 'site_desc', 'site_key', 'wa_number', 'app_logo', 'app_icon', 'hero_image'];
 		
 		public function __construct(){
 			parent::__construct();
@@ -11,12 +11,8 @@
 		public function get(){
 			$data = new stdClass();
 
-			foreach (['settings', 'settingss'] as $table) {
-				if (!$this->db->table_exists($table)) {
-					continue;
-				}
-
-				$query = $this->db->limit(1)->get($table);
+			if ($this->db->table_exists('settingss')) {
+				$query = $this->db->limit(1)->get('settingss');
 				if ($query->num_rows() > 0) {
 					foreach ($query->row() as $key => $val) {
 						$data->$key = $val;
@@ -26,26 +22,28 @@
 
 			$data->app_logo = $this->normalize_upload_asset(isset($data->app_logo) ? $data->app_logo : '', 'act_logo.png');
 			$data->app_icon = $this->normalize_upload_asset(isset($data->app_icon) ? $data->app_icon : '', 'icon.png');
+			$data->hero_image = $this->normalize_hero_asset(isset($data->hero_image) ? $data->hero_image : '');
+			$data->supports_hero_image = $this->has_app_field('hero_image');
 
 			return $data;
 		}
 		
 		public function update($data){
-			if (!$this->db->table_exists('settings')) {
+			if (!$this->db->table_exists('settingss')) {
 				return false;
 			}
 
-			$data = $this->filter_existing_fields('settings', $data);
+			$data = $this->filter_existing_fields('settingss', $data);
 			if (empty($data)) {
 				return false;
 			}
 
-			$existing = $this->db->limit(1)->get('settings')->row();
+			$existing = $this->db->limit(1)->get('settingss')->row();
 			if ($existing) {
-				return $this->db->where('id', $existing->id)->update('settings', $data);
+				return $this->db->where('id', $existing->id)->update('settingss', $data);
 			}
 
-			return $this->db->insert('settings', $data);
+			return $this->db->insert('settingss', $data);
 		}
 
 		public function update_app($data){
@@ -102,16 +100,19 @@
 			return null;
 		}
 
-		private function resolve_app_table(){
-			foreach (['settingss', 'settings'] as $table) {
-				if (!$this->db->table_exists($table)) {
-					continue;
-				}
+		public function has_app_field($field){
+			$table = $this->resolve_app_table();
+			return $table && $this->db->field_exists($field, $table);
+		}
 
-				foreach ($this->app_fields as $field) {
-					if ($this->db->field_exists($field, $table)) {
-						return $table;
-					}
+		private function resolve_app_table(){
+			if (!$this->db->table_exists('settingss')) {
+				return false;
+			}
+
+			foreach ($this->app_fields as $field) {
+				if ($this->db->field_exists($field, 'settingss')) {
+					return 'settingss';
 				}
 			}
 
@@ -138,6 +139,15 @@
 			$fallback = basename((string) $fallback);
 			if ($fallback !== '' && is_file(FCPATH . 'uploads' . DIRECTORY_SEPARATOR . $fallback)) {
 				return 'uploads/' . $fallback;
+			}
+
+			return '';
+		}
+
+		private function normalize_hero_asset($path){
+			$file = basename((string) $path);
+			if ($file !== '' && is_file(FCPATH . 'uploads' . DIRECTORY_SEPARATOR . 'hero' . DIRECTORY_SEPARATOR . $file)) {
+				return 'uploads/hero/' . $file;
 			}
 
 			return '';
