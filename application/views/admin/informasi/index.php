@@ -40,7 +40,7 @@
 	<div class="admin-warta-modal">
 		<h2 class="admin-warta-modal-title" id="modalTitle">Tambah Warta</h2>
 
-		<form id="formData" class="admin-warta-form" enctype="multipart/form-data">
+		<form id="formData" class="admin-warta-form" method="post" enctype="multipart/form-data">
 			<input type="hidden" id="id" name="id">
 
 			<div class="admin-warta-field">
@@ -76,7 +76,7 @@
 
 			<div class="admin-warta-field">
 				<label class="admin-warta-label">Gambar</label>
-				<p class="admin-warta-hint">Format JPG, PNG, atau WebP. Disarankan 1200 × 630 piksel. Maksimal 3 MB.</p>
+				<p class="admin-warta-hint">Format JPG, PNG, atau WebP. Disarankan 1200 × 630 piksel. Maksimal 15 MB. HEIC/HEIF belum didukung.</p>
 
 				<div id="currentImageWrapper" class="admin-warta-image-section hidden">
 					<img id="currentImage" src="" alt="Preview" class="admin-warta-preview">
