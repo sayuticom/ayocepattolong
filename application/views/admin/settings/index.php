@@ -58,7 +58,7 @@
                 <?php if (!empty($settings->app_logo)): ?>
                 <div class="mt-3">
                     <p class="text-sm text-gray-600 mb-1">Logo saat ini:</p>
-                    <img src="<?= base_url($settings->app_logo) ?>" alt="App Logo" class="w-32 h-auto rounded shadow">
+                    <img src="<?= base_url($settings->app_logo) ?>" alt="App Logo" class="max-h-16 w-auto rounded shadow">
                     <p class="text-xs text-gray-500 mt-1"><?= $settings->app_logo ?></p>
 				</div>
                 <?php endif; ?>
@@ -104,7 +104,7 @@
                 <?php if (!empty($settings->app_logo)): ?>
                 <div class="text-center">
                     <p class="text-sm text-gray-600 mb-1">Logo</p>
-                    <img src="<?= base_url($settings->app_logo) ?>" alt="App Logo" class="h-12 w-auto mx-auto">
+                    <img src="<?= base_url($settings->app_logo) ?>" alt="App Logo" class="max-h-14 w-auto mx-auto">
 				</div>
                 <?php endif; ?>
 			</div>

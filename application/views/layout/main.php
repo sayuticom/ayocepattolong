@@ -414,7 +414,7 @@
 					<!-- Logo Area -->
 					<div class="p-6 border-b border-gray-700/30">
 						<div class="flex items-center space-x-3">
-							<img src="<?= base_url($logo_path) ?>" alt="<?= html_escape($app_name) ?>" class="w-14 h-14 rounded-lg object-contain bg-white/10">
+							<img src="<?= base_url($logo_path) ?>" alt="<?= html_escape($app_name) ?>" class="max-h-14 w-auto rounded-lg object-contain bg-white/10">
 							<div>
 								<h1 class="text-lg font-bold text-white"><?= html_escape($app_name) ?></h1>
 							</div>
@@ -609,7 +609,7 @@
 					<!-- Header -->
 					<div class="p-6 border-b border-gray-700/30 flex justify-between items-center">
 						<div class="flex items-center space-x-3">
-							<img src="<?= base_url($logo_path) ?>" alt="<?= html_escape($app_name) ?>" class="w-12 h-12 rounded-lg object-contain bg-white/10">
+							<img src="<?= base_url($logo_path) ?>" alt="<?= html_escape($app_name) ?>" class="max-h-12 w-auto rounded-lg object-contain bg-white/10">
 							<div>
 								<h1 class="text-lg font-bold text-white"><?= html_escape($app_name) ?></h1>
 							</div>

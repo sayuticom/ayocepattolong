@@ -20,7 +20,7 @@
 			<div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
 				
 				<div class="flex justify-center mb-5">
-					<img src="<?= base_url($logo_path) ?>" alt="<?= html_escape($app_name) ?>" class="h-16 w-auto object-contain">
+					<img src="<?= base_url($logo_path) ?>" alt="<?= html_escape($app_name) ?>" class="max-h-14 w-auto object-contain">
 				</div>
 				<h2 class="text-2xl font-bold text-center mb-6">Login Admin Panel</h2>
 				

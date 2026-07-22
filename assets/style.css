@@ -311,7 +311,8 @@
 
 .act-brand img {
 	width: auto;
-	height: 72px;
+	height: auto;
+	max-height: 60px;
 	object-fit: contain;
 }
 
@@ -1169,7 +1170,8 @@
 
 .act-footer-brand img {
 	width: auto;
-	height: 56px;
+	height: auto;
+	max-height: 56px;
 	margin-bottom: 16px;
 	filter: brightness(1.08);
 }
@@ -1251,7 +1253,7 @@
 	}
 
 	.act-brand img {
-		height: 58px;
+		max-height: 56px;
 	}
 
 	.act-menu {
@@ -1376,7 +1378,7 @@
 
 @media (max-width: 420px) {
 	.act-brand img {
-		height: 50px;
+		max-height: 50px;
 	}
 
 	.act-hero h1 {
