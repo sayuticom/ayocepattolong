@@ -114,9 +114,9 @@
 
 			// Handle image upload
 			if (!empty($_FILES['image']['name'])) {
-				$upload_ready = $this->_ensure_news_upload_path();
-				if (!$upload_ready['status']) {
-					echo json_encode($upload_ready);
+				$uploadReady = $this->_ensure_news_upload_path();
+				if (!$uploadReady['status']) {
+					echo json_encode($uploadReady);
 					return;
 				}
 
@@ -131,7 +131,11 @@
 					return;
 				}
 
-				$this->load->library('upload', $this->_upload_config());
+				$config = $this->_upload_config();
+				$config['upload_path'] = $uploadReady['path'];
+
+				$this->load->library('upload');
+				$this->upload->initialize($config, TRUE);
 
 				if ($this->upload->do_upload('image')) {
 					$upload_data = $this->upload->data();
@@ -204,20 +208,42 @@
 		// ================= HELPERS =================
 
 		private function _news_upload_path() {
-			return FCPATH . 'uploads/news/';
+			$basePath = realpath(FCPATH);
+
+			if ($basePath === false) {
+				$basePath = rtrim(FCPATH, '/\\');
+			}
+
+			return $basePath
+				. DIRECTORY_SEPARATOR
+				. 'uploads'
+				. DIRECTORY_SEPARATOR
+				. 'news'
+				. DIRECTORY_SEPARATOR;
 		}
 
 		private function _ensure_news_upload_path() {
 			$path = $this->_news_upload_path();
-			if (!is_dir($path) && !@mkdir($path, 0755, TRUE)) {
-				return ["status" => false, "message" => "Folder upload Warta tidak dapat dibuat."];
+			if (!is_dir($path)) {
+				if (!mkdir($path, 0775, TRUE) && !is_dir($path)) {
+					return ["status" => false, "message" => "Folder upload Warta tidak dapat dibuat."];
+				}
 			}
 
-			if (!is_writable($path)) {
+			$realPath = realpath($path);
+
+			if ($realPath === false || !is_dir($realPath)) {
+				return ["status" => false, "message" => "Path upload Warta tidak valid."];
+			}
+
+			if (!is_writable($realPath)) {
 				return ["status" => false, "message" => "Folder uploads/news tidak writable."];
 			}
 
-			return ["status" => true];
+			return [
+				"status" => true,
+				"path" => $realPath . DIRECTORY_SEPARATOR,
+			];
 		}
 
 		private function _upload_error_message($error_code) {
