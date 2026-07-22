@@ -1,9 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+	<?php
+		$app_name = !empty($settings->app_name) ? $settings->app_name : 'Ayo Cepat Tolong';
+		$logo_file = !empty($settings->app_logo) ? basename($settings->app_logo) : '';
+		$logo_path = ($logo_file && is_file(FCPATH . 'uploads' . DIRECTORY_SEPARATOR . $logo_file))
+			? 'uploads/' . $logo_file
+			: 'uploads/act_logo.png';
+	?>
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>Login Panel</title>
+		<title>Login Panel - <?= html_escape($app_name) ?></title>
 		<script src="https://cdn.tailwindcss.com"></script>
 	</head>
 	
@@ -12,6 +19,9 @@
 		<div class="flex items-center justify-center h-screen">
 			<div class="bg-white shadow-lg rounded-lg p-8 w-full max-w-md">
 				
+				<div class="flex justify-center mb-5">
+					<img src="<?= base_url($logo_path) ?>" alt="<?= html_escape($app_name) ?>" class="h-16 w-auto object-contain">
+				</div>
 				<h2 class="text-2xl font-bold text-center mb-6">Login Admin Panel</h2>
 				
 				<?php if ($this->session->flashdata('error')): ?>

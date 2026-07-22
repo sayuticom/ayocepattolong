@@ -24,6 +24,9 @@
 				}
 			}
 
+			$data->app_logo = $this->normalize_upload_asset(isset($data->app_logo) ? $data->app_logo : '', 'act_logo.png');
+			$data->app_icon = $this->normalize_upload_asset(isset($data->app_icon) ? $data->app_icon : '', 'icon.png');
+
 			return $data;
 		}
 		
@@ -124,5 +127,19 @@
 			}
 
 			return $filtered;
+		}
+
+		private function normalize_upload_asset($path, $fallback){
+			$file = basename((string) $path);
+			if ($file !== '' && is_file(FCPATH . 'uploads' . DIRECTORY_SEPARATOR . $file)) {
+				return 'uploads/' . $file;
+			}
+
+			$fallback = basename((string) $fallback);
+			if ($fallback !== '' && is_file(FCPATH . 'uploads' . DIRECTORY_SEPARATOR . $fallback)) {
+				return 'uploads/' . $fallback;
+			}
+
+			return '';
 		}
 	}

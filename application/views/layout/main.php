@@ -1,22 +1,24 @@
+<?php
+	$settings = !empty($settings) ? $settings : new stdClass();
+	$app_name = !empty($settings->app_name) ? $settings->app_name : 'Admin Panel';
+	$logo_file = !empty($settings->app_logo) ? basename($settings->app_logo) : '';
+	$icon_file = !empty($settings->app_icon) ? basename($settings->app_icon) : '';
+	$logo_path = ($logo_file && is_file(FCPATH . 'uploads' . DIRECTORY_SEPARATOR . $logo_file)) ? 'uploads/' . $logo_file : 'uploads/act_logo.png';
+	$icon_path = ($icon_file && is_file(FCPATH . 'uploads' . DIRECTORY_SEPARATOR . $icon_file)) ? 'uploads/' . $icon_file : 'uploads/icon.png';
+?>
 <!DOCTYPE html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title><?= $settings->app_name ?? 'Admin Panel' ?> - <?= $title ?></title>
+		<title><?= html_escape($app_name) ?> - <?= $title ?></title>
 		
 		<!-- Favicon -->
-		<?php if (!empty($settings->app_icon)): ?>
-		<link rel="icon" type="image/x-icon" href="<?= base_url($settings->app_icon) ?>">
-		<link rel="shortcut icon" href="<?= base_url($settings->app_icon) ?>" type="image/x-icon">
-		<?php else: ?>
-		<link rel="icon" type="image/x-icon" href="<?= base_url('assets/img/icon.png') ?>">
-		<?php endif; ?>
+		<link rel="icon" type="image/x-icon" href="<?= base_url($icon_path) ?>">
+		<link rel="shortcut icon" href="<?= base_url($icon_path) ?>" type="image/x-icon">
 		
 		<!-- Apple Touch Icon -->
-		<?php if (!empty($settings->app_logo)): ?>
-		<link rel="apple-touch-icon" href="<?= base_url($settings->app_logo) ?>">
-		<?php endif; ?>
+		<link rel="apple-touch-icon" href="<?= base_url($logo_path) ?>">
 		
 		<!-- Tailwind CSS -->
 		<script src="https://cdn.tailwindcss.com"></script>
@@ -412,15 +414,9 @@
 					<!-- Logo Area -->
 					<div class="p-6 border-b border-gray-700/30">
 						<div class="flex items-center space-x-3">
-							<?php if (!empty($settings->app_logo)): ?>
-							<img src="<?= base_url($settings->app_logo) ?>" alt="Logo" class="w-14 h-14 rounded-lg object-cover">
-							<?php else: ?>
-							<div class="w-14 h-14 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
-								<i class="fas fa-cube text-white text-xl"></i>
-							</div>
-							<?php endif; ?>
+							<img src="<?= base_url($logo_path) ?>" alt="<?= html_escape($app_name) ?>" class="w-14 h-14 rounded-lg object-contain bg-white/10">
 							<div>
-								<h1 class="text-lg font-bold text-white"><?= $settings->app_name ?? 'Admin Panel' ?></h1>
+								<h1 class="text-lg font-bold text-white"><?= html_escape($app_name) ?></h1>
 							</div>
 						</div>
 					</div>
@@ -613,15 +609,9 @@
 					<!-- Header -->
 					<div class="p-6 border-b border-gray-700/30 flex justify-between items-center">
 						<div class="flex items-center space-x-3">
-							<?php if (!empty($settings->app_logo)): ?>
-							<img src="<?= base_url($settings->app_logo) ?>" alt="Logo" class="w-12 h-12 rounded-lg object-cover">
-							<?php else: ?>
-							<div class="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
-								<i class="fas fa-cube text-white text-lg"></i>
-							</div>
-							<?php endif; ?>
+							<img src="<?= base_url($logo_path) ?>" alt="<?= html_escape($app_name) ?>" class="w-12 h-12 rounded-lg object-contain bg-white/10">
 							<div>
-								<h1 class="text-lg font-bold text-white"><?= $settings->app_name ?? 'Admin Panel' ?></h1>
+								<h1 class="text-lg font-bold text-white"><?= html_escape($app_name) ?></h1>
 							</div>
 						</div>
 						<button id="closeMobileMenu" class="text-gray-300 hover:text-white">

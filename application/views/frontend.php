@@ -5,8 +5,10 @@
 	$app_name = !empty($settings->app_name) ? $settings->app_name : 'Ayo Cepat Tolong';
 	$site_desc = !empty($settings->site_desc) ? $settings->site_desc : 'Gerakan kemanusiaan antar komunitas yang diinisiasi oleh LAMTREN.';
 	$wa_number = !empty($settings->wa_number) ? preg_replace('/\D+/', '', $settings->wa_number) : '';
-	$logo_path = (!empty($settings->app_logo) && file_exists(FCPATH . $settings->app_logo)) ? $settings->app_logo : 'assets/img/act_logo.png';
-	$icon_path = (!empty($settings->app_icon) && file_exists(FCPATH . $settings->app_icon)) ? $settings->app_icon : 'assets/img/favicon.png';
+	$logo_file = !empty($settings->app_logo) ? basename($settings->app_logo) : '';
+	$icon_file = !empty($settings->app_icon) ? basename($settings->app_icon) : '';
+	$logo_path = ($logo_file && is_file(FCPATH . 'uploads' . DIRECTORY_SEPARATOR . $logo_file)) ? 'uploads/' . $logo_file : 'uploads/act_logo.png';
+	$icon_path = ($icon_file && is_file(FCPATH . 'uploads' . DIRECTORY_SEPARATOR . $icon_file)) ? 'uploads/' . $icon_file : 'uploads/icon.png';
 
 	if (!function_exists('act_text_limit')) {
 		function act_text_limit($text, $limit = 160)

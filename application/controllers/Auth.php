@@ -5,9 +5,14 @@
 		public function __construct(){
 			parent::__construct();
 			$this->load->model('Users_model');
+			$this->load->model('Settings_model');
 		}
 		
 		public function login(){
+			$data = [
+				'settings' => $this->Settings_model->get()
+			];
+
 			if($this->input->method() == 'post'){
 				$u = $this->input->post('username');
 				$p = $this->input->post('password');
@@ -31,7 +36,7 @@
 				}
 				return;
 			}
-			$this->load->view('auth/login');
+			$this->load->view('auth/login', $data);
 		}
 		
 		public function logout(){

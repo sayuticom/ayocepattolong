@@ -1,7 +1,9 @@
 <?php
 	$app_name = !empty($settings->app_name) ? $settings->app_name : 'Ayo Cepat Tolong';
-	$logo_path = (!empty($settings->app_logo) && is_file(FCPATH . $settings->app_logo)) ? $settings->app_logo : 'assets/img/act_logo.png';
-	$icon_path = (!empty($settings->app_icon) && is_file(FCPATH . $settings->app_icon)) ? $settings->app_icon : 'assets/img/favicon.png';
+	$logo_file = !empty($settings->app_logo) ? basename($settings->app_logo) : '';
+	$icon_file = !empty($settings->app_icon) ? basename($settings->app_icon) : '';
+	$logo_path = ($logo_file && is_file(FCPATH . 'uploads' . DIRECTORY_SEPARATOR . $logo_file)) ? 'uploads/' . $logo_file : 'uploads/act_logo.png';
+	$icon_path = ($icon_file && is_file(FCPATH . 'uploads' . DIRECTORY_SEPARATOR . $icon_file)) ? 'uploads/' . $icon_file : 'uploads/icon.png';
 ?>
 <!DOCTYPE html>
 <html lang="id">
