@@ -516,6 +516,10 @@
 	pointer-events: none;
 }
 
+.act-news-image::after {
+	background: linear-gradient(180deg, transparent 62%, rgba(15, 23, 42, 0.26));
+}
+
 .act-hero-media img,
 .act-slide img,
 .act-news-image img {
@@ -690,8 +694,8 @@
 	align-items: center;
 	justify-content: center;
 	background:
-		linear-gradient(135deg, rgba(15, 23, 42, 0.94), rgba(30, 41, 59, 0.88)),
-		linear-gradient(45deg, rgba(249, 115, 22, 0.18) 25%, transparent 25%, transparent 50%, rgba(249, 115, 22, 0.18) 50%, rgba(249, 115, 22, 0.18) 75%, transparent 75%);
+		linear-gradient(135deg, rgba(15, 23, 42, 0.74), rgba(30, 41, 59, 0.66)),
+		linear-gradient(45deg, rgba(249, 115, 22, 0.12) 25%, transparent 25%, transparent 50%, rgba(249, 115, 22, 0.12) 50%, rgba(249, 115, 22, 0.12) 75%, transparent 75%);
 	background-size: auto, 28px 28px;
 	color: #FED7AA;
 }
@@ -699,8 +703,8 @@
 .act-news-placeholder img {
 	position: absolute;
 	inset: 0;
-	opacity: 0.16;
-	filter: saturate(0.55);
+	opacity: 0.32;
+	filter: saturate(0.75);
 }
 
 .act-placeholder-mark {
@@ -1327,7 +1331,6 @@
 		height: 42px;
 	}
 
-	.act-news-grid,
 	.act-steps-grid,
 	.act-footer-grid,
 	.act-donation-grid {
@@ -1373,6 +1376,12 @@
 
 	.act-donation-grid .act-btn {
 		width: 100%;
+	}
+}
+
+@media (max-width: 639px) {
+	.act-news-grid {
+		grid-template-columns: 1fr;
 	}
 }
 
