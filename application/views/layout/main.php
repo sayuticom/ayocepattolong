@@ -466,17 +466,6 @@
 						</div>
 					</div>
 					
-					<!-- Search Bar -->
-					<div class="p-4 border-b border-gray-700/30">
-						<div class="relative">
-							<input type="text" 
-							id="globalSearch"
-							placeholder="Cari menu..."
-							class="w-full bg-gray-800 border border-gray-700 rounded-lg py-2 pl-10 pr-4 text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
-							<i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
-						</div>
-					</div>
-					
 					<!-- Navigation Menu -->
 					<nav class="flex-1 p-4 overflow-y-auto">
 						<ul class="space-y-1">
@@ -983,25 +972,6 @@
 					$('html, body').animate({ scrollTop: 0 }, 300);
 				});
 				
-				// Global search
-				$('#globalSearch').on('input', function() {
-					const searchTerm = $(this).val().toLowerCase();
-					if (searchTerm.length > 0) {
-						$('.menu-item').each(function() {
-							const text = $(this).text().toLowerCase();
-							if (text.includes(searchTerm)) {
-								$(this).show();
-								$(this).addClass('bg-primary-500/10');
-								} else {
-								$(this).hide();
-								$(this).removeClass('bg-primary-500/10');
-							}
-						});
-						} else {
-						$('.menu-item').show().removeClass('bg-primary-500/10');
-					}
-				});
-				
 				// Show/hide quick actions panel on scroll
 				let lastScrollTop = 0;
 				$(window).on('scroll', function() {
@@ -1154,12 +1124,6 @@
 				
 				// Keyboard shortcuts
 				$(document).on('keydown', function(e) {
-					// Ctrl + K for search
-					if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-						e.preventDefault();
-						$('#globalSearch').focus();
-					}
-					
 					// Escape to close modals
 					if (e.key === 'Escape') {
 						$('.modal').hide();
