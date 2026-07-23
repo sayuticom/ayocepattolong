@@ -174,22 +174,24 @@
 							<img src="<?= html_escape($slide['image']) ?>" alt="<?= html_escape($slide['title']) ?>">
 						</picture>
 						<div class="act-hero-slide-overlay"></div>
-						<div class="act-container act-hero-slide-content">
-							<p class="act-eyebrow">GERAKAN KEMANUSIAAN ANTAR KOMUNITAS</p>
-							<<?= $heading_tag ?>><?= html_escape($slide['title']) ?></<?= $heading_tag ?>>
-							<?php if (!empty($slide['caption'])): ?>
-							<p class="act-hero-text"><?= html_escape($slide['caption']) ?></p>
-							<?php endif; ?>
-							<?php if ((!empty($slide['primary_button_text']) && !empty($slide['primary_button_url'])) || (!empty($slide['secondary_button_text']) && !empty($slide['secondary_button_url']))): ?>
-							<div class="act-hero-actions">
-								<?php if (!empty($slide['primary_button_text']) && !empty($slide['primary_button_url'])): ?>
-								<a href="<?= html_escape($slide['primary_button_url']) ?>" class="act-btn act-btn-primary" <?= !empty($slide['primary_external']) ? 'target="_blank" rel="noopener noreferrer"' : '' ?> <?= $is_active_slide ? '' : 'tabindex="-1"' ?>><?= html_escape($slide['primary_button_text']) ?></a>
+						<div class="act-hero-slide-content">
+							<div class="act-container act-hero-slide-inner">
+								<p class="act-eyebrow">GERAKAN KEMANUSIAAN ANTAR KOMUNITAS</p>
+								<<?= $heading_tag ?>><?= html_escape($slide['title']) ?></<?= $heading_tag ?>>
+								<?php if (!empty($slide['caption'])): ?>
+								<p class="act-hero-text"><?= html_escape($slide['caption']) ?></p>
 								<?php endif; ?>
-								<?php if (!empty($slide['secondary_button_text']) && !empty($slide['secondary_button_url'])): ?>
-								<a href="<?= html_escape($slide['secondary_button_url']) ?>" class="act-btn act-btn-outline" <?= !empty($slide['secondary_external']) ? 'target="_blank" rel="noopener noreferrer"' : '' ?> <?= $is_active_slide ? '' : 'tabindex="-1"' ?>><?= html_escape($slide['secondary_button_text']) ?></a>
+								<?php if ((!empty($slide['primary_button_text']) && !empty($slide['primary_button_url'])) || (!empty($slide['secondary_button_text']) && !empty($slide['secondary_button_url']))): ?>
+								<div class="act-hero-actions">
+									<?php if (!empty($slide['primary_button_text']) && !empty($slide['primary_button_url'])): ?>
+									<a href="<?= html_escape($slide['primary_button_url']) ?>" class="act-btn act-btn-primary" <?= !empty($slide['primary_external']) ? 'target="_blank" rel="noopener noreferrer"' : '' ?> <?= $is_active_slide ? '' : 'tabindex="-1"' ?>><?= html_escape($slide['primary_button_text']) ?></a>
+									<?php endif; ?>
+									<?php if (!empty($slide['secondary_button_text']) && !empty($slide['secondary_button_url'])): ?>
+									<a href="<?= html_escape($slide['secondary_button_url']) ?>" class="act-btn act-btn-outline" <?= !empty($slide['secondary_external']) ? 'target="_blank" rel="noopener noreferrer"' : '' ?> <?= $is_active_slide ? '' : 'tabindex="-1"' ?>><?= html_escape($slide['secondary_button_text']) ?></a>
+									<?php endif; ?>
+								</div>
 								<?php endif; ?>
 							</div>
-							<?php endif; ?>
 						</div>
 					</article>
 					<?php endforeach; ?>
