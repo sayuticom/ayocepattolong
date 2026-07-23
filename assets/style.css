@@ -530,6 +530,7 @@
 
 .act-hero-slider {
 	position: relative;
+	display: block;
 	width: 100%;
 	max-width: none;
 	min-height: clamp(520px, 70vh, 760px);
@@ -537,6 +538,7 @@
 	background: #0F172A;
 }
 
+.act-hero-slides,
 .act-hero-slider-track {
 	position: relative;
 	width: 100%;
@@ -566,6 +568,9 @@
 	pointer-events: auto;
 }
 
+.act-hero-slide-media,
+.act-hero-slide-media picture,
+.act-hero-slide-media img,
 .act-hero-slide picture,
 .act-hero-slide img {
 	position: absolute;
@@ -576,6 +581,7 @@
 	height: 100%;
 }
 
+.act-hero-slide-media img,
 .act-hero-slide img {
 	object-fit: cover;
 	object-position: center;
@@ -598,6 +604,8 @@
 	z-index: 3;
 	display: flex;
 	align-items: center;
+	width: 100%;
+	height: 100%;
 	padding-top: 88px;
 	padding-bottom: 88px;
 	color: #FFFFFF;

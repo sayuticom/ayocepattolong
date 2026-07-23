@@ -98,6 +98,12 @@
 
 	$has_hero_slider = !empty($hero_slides);
 	$hero_image = $settings_hero_image ?: (file_exists(FCPATH . 'uploads/lautan-kayu-di-aceh-tamiang.webp') ? base_url('uploads/lautan-kayu-di-aceh-tamiang.webp') : base_url($logo_path));
+	$style_path = FCPATH . 'assets/style.css';
+	$style_version = is_file($style_path) ? filemtime($style_path) : false;
+	$style_url = base_url('assets/style.css');
+	if ($style_version !== false) {
+		$style_url .= (strpos($style_url, '?') === false ? '?' : '&') . 'v=' . (int) $style_version;
+	}
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -109,7 +115,7 @@
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-		<link rel="stylesheet" href="<?= base_url('assets/style.css') ?>">
+		<link rel="stylesheet" href="<?= html_escape($style_url) ?>">
 	</head>
 	<body class="act-page">
 		<?php if ($this->session->flashdata('sukses')): ?>
@@ -157,7 +163,7 @@
 		<main>
 			<?php if ($has_hero_slider): ?>
 			<section id="home" class="act-hero act-hero-slider" aria-roledescription="carousel" aria-label="Hero Ayo Cepat Tolong">
-				<div class="act-hero-slider-track" id="actHeroSlider">
+				<div class="act-hero-slides" id="actHeroSlider">
 					<?php foreach ($hero_slides as $index => $slide): ?>
 					<?php
 						$is_active_slide = $index === 0;
@@ -167,12 +173,14 @@
 					<article class="act-hero-slide <?= $position_class ?> <?= $is_active_slide ? 'is-active' : '' ?>"
 						aria-hidden="<?= $is_active_slide ? 'false' : 'true' ?>"
 						style="--hero-overlay-opacity: <?= $slide['overlay_opacity'] / 100; ?>;">
-						<picture>
-							<?php if (!empty($slide['mobile_image'])): ?>
-							<source media="(max-width: 640px)" srcset="<?= html_escape($slide['mobile_image']) ?>">
-							<?php endif; ?>
-							<img src="<?= html_escape($slide['image']) ?>" alt="<?= html_escape($slide['title']) ?>">
-						</picture>
+						<div class="act-hero-slide-media">
+							<picture>
+								<?php if (!empty($slide['mobile_image'])): ?>
+								<source media="(max-width: 640px)" srcset="<?= html_escape($slide['mobile_image']) ?>">
+								<?php endif; ?>
+								<img src="<?= html_escape($slide['image']) ?>" alt="<?= html_escape($slide['title']) ?>">
+							</picture>
+						</div>
 						<div class="act-hero-slide-overlay"></div>
 						<div class="act-hero-slide-content">
 							<div class="act-container act-hero-slide-inner">
