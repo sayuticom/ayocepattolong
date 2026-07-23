@@ -55,20 +55,48 @@
 		}
 	}
 
-	$slider_items = [];
+	$hero_slides = [];
 	if (!empty($slider)) {
 		foreach ($slider as $row) {
-			$image_url = act_image_url(isset($row->image) ? $row->image : '', 'uploads/slider');
-			if ($image_url) {
-				$slider_items[] = [
-					'image' => $image_url,
+			$image_file = isset($row->image) ? basename((string) $row->image) : '';
+			if ($image_file === '' || !is_file(FCPATH . 'uploads' . DIRECTORY_SEPARATOR . 'slider' . DIRECTORY_SEPARATOR . $image_file)) {
+				continue;
+			}
+
+			$mobile_file = isset($row->mobile_image) ? basename((string) $row->mobile_image) : '';
+			$mobile_url = ($mobile_file && is_file(FCPATH . 'uploads' . DIRECTORY_SEPARATOR . 'slider' . DIRECTORY_SEPARATOR . $mobile_file))
+				? base_url('uploads/slider/' . $mobile_file)
+				: '';
+
+			$text_position = isset($row->text_position) && in_array($row->text_position, ['left', 'center', 'right'], true) ? $row->text_position : 'left';
+			$overlay_opacity = isset($row->overlay_opacity) ? (int) $row->overlay_opacity : 40;
+			$overlay_opacity = max(0, min(80, $overlay_opacity));
+
+			$primary_text = isset($row->primary_button_text) ? trim((string) $row->primary_button_text) : '';
+			$primary_url = isset($row->primary_button_url) ? trim((string) $row->primary_button_url) : '';
+			$secondary_text = isset($row->secondary_button_text) ? trim((string) $row->secondary_button_text) : '';
+			$secondary_url = isset($row->secondary_button_url) ? trim((string) $row->secondary_button_url) : '';
+			$primary_external = $primary_url !== '' && preg_match('#^https?://#i', $primary_url);
+			$secondary_external = $secondary_url !== '' && preg_match('#^https?://#i', $secondary_url);
+
+			$hero_slides[] = [
+				'image' => base_url('uploads/slider/' . $image_file),
+				'mobile_image' => $mobile_url,
 					'title' => !empty($row->title) ? $row->title : 'Kegiatan Ayo Cepat Tolong',
 					'caption' => !empty($row->caption) ? $row->caption : '',
-				];
-			}
+				'primary_button_text' => $primary_text,
+				'primary_button_url' => $primary_url,
+				'primary_external' => $primary_external,
+				'secondary_button_text' => $secondary_text,
+				'secondary_button_url' => $secondary_url,
+				'secondary_external' => $secondary_external,
+				'text_position' => $text_position,
+				'overlay_opacity' => $overlay_opacity,
+			];
 		}
 	}
 
+	$has_hero_slider = !empty($hero_slides);
 	$hero_image = $settings_hero_image ?: (file_exists(FCPATH . 'uploads/lautan-kayu-di-aceh-tamiang.webp') ? base_url('uploads/lautan-kayu-di-aceh-tamiang.webp') : base_url($logo_path));
 ?>
 <!DOCTYPE html>
@@ -127,6 +155,61 @@
 		</header>
 
 		<main>
+			<?php if ($has_hero_slider): ?>
+			<section id="home" class="act-hero act-hero-slider" aria-roledescription="carousel" aria-label="Hero Ayo Cepat Tolong">
+				<div class="act-hero-slider-track" id="actHeroSlider">
+					<?php foreach ($hero_slides as $index => $slide): ?>
+					<?php
+						$is_active_slide = $index === 0;
+						$position_class = 'act-hero-slide-' . $slide['text_position'];
+						$heading_tag = $is_active_slide ? 'h1' : 'h2';
+					?>
+					<article class="act-hero-slide <?= $position_class ?> <?= $is_active_slide ? 'is-active' : '' ?>"
+						aria-hidden="<?= $is_active_slide ? 'false' : 'true' ?>"
+						style="--hero-overlay-opacity: <?= $slide['overlay_opacity'] / 100; ?>;">
+						<picture>
+							<?php if (!empty($slide['mobile_image'])): ?>
+							<source media="(max-width: 640px)" srcset="<?= html_escape($slide['mobile_image']) ?>">
+							<?php endif; ?>
+							<img src="<?= html_escape($slide['image']) ?>" alt="<?= html_escape($slide['title']) ?>">
+						</picture>
+						<div class="act-hero-slide-overlay"></div>
+						<div class="act-container act-hero-slide-content">
+							<p class="act-eyebrow">GERAKAN KEMANUSIAAN ANTAR KOMUNITAS</p>
+							<<?= $heading_tag ?>><?= html_escape($slide['title']) ?></<?= $heading_tag ?>>
+							<?php if (!empty($slide['caption'])): ?>
+							<p class="act-hero-text"><?= html_escape($slide['caption']) ?></p>
+							<?php endif; ?>
+							<?php if ((!empty($slide['primary_button_text']) && !empty($slide['primary_button_url'])) || (!empty($slide['secondary_button_text']) && !empty($slide['secondary_button_url']))): ?>
+							<div class="act-hero-actions">
+								<?php if (!empty($slide['primary_button_text']) && !empty($slide['primary_button_url'])): ?>
+								<a href="<?= html_escape($slide['primary_button_url']) ?>" class="act-btn act-btn-primary" <?= !empty($slide['primary_external']) ? 'target="_blank" rel="noopener noreferrer"' : '' ?> <?= $is_active_slide ? '' : 'tabindex="-1"' ?>><?= html_escape($slide['primary_button_text']) ?></a>
+								<?php endif; ?>
+								<?php if (!empty($slide['secondary_button_text']) && !empty($slide['secondary_button_url'])): ?>
+								<a href="<?= html_escape($slide['secondary_button_url']) ?>" class="act-btn act-btn-outline" <?= !empty($slide['secondary_external']) ? 'target="_blank" rel="noopener noreferrer"' : '' ?> <?= $is_active_slide ? '' : 'tabindex="-1"' ?>><?= html_escape($slide['secondary_button_text']) ?></a>
+								<?php endif; ?>
+							</div>
+							<?php endif; ?>
+						</div>
+					</article>
+					<?php endforeach; ?>
+				</div>
+
+				<?php if (count($hero_slides) > 1): ?>
+				<button class="act-hero-nav act-hero-prev" type="button" aria-label="Slide hero sebelumnya">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+				</button>
+				<button class="act-hero-nav act-hero-next" type="button" aria-label="Slide hero berikutnya">
+					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+				</button>
+				<div class="act-hero-dots" role="tablist" aria-label="Pilih slide hero">
+					<?php foreach ($hero_slides as $index => $slide): ?>
+					<button type="button" class="<?= $index === 0 ? 'is-active' : '' ?>" aria-label="Tampilkan slide <?= $index + 1 ?>" aria-selected="<?= $index === 0 ? 'true' : 'false' ?>"></button>
+					<?php endforeach; ?>
+				</div>
+				<?php endif; ?>
+			</section>
+			<?php else: ?>
 			<section id="home" class="act-hero">
 				<div class="act-container act-hero-grid">
 					<div class="act-hero-copy">
@@ -145,36 +228,6 @@
 					</div>
 					<div class="act-hero-media">
 						<img src="<?= $hero_image ?>" alt="Aksi kemanusiaan Ayo Cepat Tolong">
-					</div>
-				</div>
-			</section>
-
-			<?php if (!empty($slider_items)): ?>
-			<section class="act-section act-slider-section" aria-label="Dokumentasi kegiatan">
-				<div class="act-container">
-					<div class="act-slider-shell">
-						<div id="slider" class="act-slider-track">
-							<?php foreach($slider_items as $row): ?>
-							<article class="act-slide">
-								<img src="<?= $row['image'] ?>" alt="<?= html_escape($row['title']) ?>">
-								<div class="act-slide-caption">
-									<h2><?= html_escape($row['title']) ?></h2>
-									<?php if (!empty($row['caption'])): ?>
-									<p><?= html_escape(act_text_limit($row['caption'], 120)) ?></p>
-									<?php endif; ?>
-								</div>
-							</article>
-							<?php endforeach;?>
-						</div>
-
-						<?php if (count($slider_items) > 1): ?>
-						<button id="prevBtn" class="act-slider-btn act-slider-prev" type="button" aria-label="Slide sebelumnya">
-							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
-						</button>
-						<button id="nextBtn" class="act-slider-btn act-slider-next" type="button" aria-label="Slide berikutnya">
-							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
-						</button>
-						<?php endif; ?>
 					</div>
 				</div>
 			</section>
@@ -381,31 +434,121 @@
 					});
 				}
 
-				const slider = document.getElementById('slider');
-				if (slider && slider.children.length > 1) {
-					const slidesCount = slider.children.length;
+				const heroSlider = document.getElementById('actHeroSlider');
+				if (heroSlider && heroSlider.children.length > 1) {
+					const slides = Array.prototype.slice.call(heroSlider.children);
+					const slidesCount = slides.length;
 					let currentIndex = 0;
-					const prevBtn = document.getElementById('prevBtn');
-					const nextBtn = document.getElementById('nextBtn');
+					let timer = null;
+					let isPaused = false;
+					let touchStartX = 0;
+					const heroSection = document.querySelector('.act-hero-slider');
+					const prevBtn = document.querySelector('.act-hero-prev');
+					const nextBtn = document.querySelector('.act-hero-next');
+					const dots = Array.prototype.slice.call(document.querySelectorAll('.act-hero-dots button'));
+					const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-					function updateSlider() {
-						slider.style.transform = 'translateX(-' + (currentIndex * 100) + '%)';
+					function setSlide(index) {
+						currentIndex = (index + slidesCount) % slidesCount;
+						slides.forEach(function(slide, slideIndex) {
+							const isActive = slideIndex === currentIndex;
+							slide.classList.toggle('is-active', isActive);
+							slide.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+							slide.querySelectorAll('a, button, input, textarea, select').forEach(function(focusable) {
+								focusable.tabIndex = isActive ? 0 : -1;
+							});
+						});
+
+						dots.forEach(function(dot, dotIndex) {
+							const isActive = dotIndex === currentIndex;
+							dot.classList.toggle('is-active', isActive);
+							dot.setAttribute('aria-selected', isActive ? 'true' : 'false');
+						});
+					}
+
+					function nextSlide() {
+						setSlide(currentIndex + 1);
+					}
+
+					function startAutoplay() {
+						if (reducedMotion || isPaused || timer) {
+							return;
+						}
+						timer = setInterval(nextSlide, 6000);
+					}
+
+					function stopAutoplay() {
+						if (timer) {
+							clearInterval(timer);
+							timer = null;
+						}
 					}
 
 					prevBtn.addEventListener('click', function() {
-						currentIndex = (currentIndex - 1 + slidesCount) % slidesCount;
-						updateSlider();
+						stopAutoplay();
+						setSlide(currentIndex - 1);
+						startAutoplay();
 					});
 
 					nextBtn.addEventListener('click', function() {
-						currentIndex = (currentIndex + 1) % slidesCount;
-						updateSlider();
+						stopAutoplay();
+						nextSlide();
+						startAutoplay();
 					});
 
-					setInterval(function() {
-						currentIndex = (currentIndex + 1) % slidesCount;
-						updateSlider();
-					}, 5000);
+					dots.forEach(function(dot, index) {
+						dot.addEventListener('click', function() {
+							stopAutoplay();
+							setSlide(index);
+							startAutoplay();
+						});
+					});
+
+					heroSection.addEventListener('mouseenter', function() {
+						isPaused = true;
+						stopAutoplay();
+					});
+
+					heroSection.addEventListener('mouseleave', function() {
+						isPaused = false;
+						startAutoplay();
+					});
+
+					heroSection.addEventListener('focusin', function() {
+						isPaused = true;
+						stopAutoplay();
+					});
+
+					heroSection.addEventListener('focusout', function(event) {
+						if (!heroSection.contains(event.relatedTarget)) {
+							isPaused = false;
+							startAutoplay();
+						}
+					});
+
+					heroSection.addEventListener('touchstart', function(event) {
+						touchStartX = event.touches[0].clientX;
+					}, {passive: true});
+
+					heroSection.addEventListener('touchend', function(event) {
+						const diff = touchStartX - event.changedTouches[0].clientX;
+						if (Math.abs(diff) > 40) {
+							stopAutoplay();
+							setSlide(currentIndex + (diff > 0 ? 1 : -1));
+							startAutoplay();
+						}
+					}, {passive: true});
+
+					document.addEventListener('visibilitychange', function() {
+						if (document.hidden) {
+							stopAutoplay();
+						} else {
+							startAutoplay();
+						}
+					});
+
+					setSlide(0);
+					startAutoplay();
 				}
 
 				const modal = document.getElementById('modalDonasi');

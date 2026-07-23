@@ -17,7 +17,7 @@
 		{
 			
 			$data['info'] = $this->Informasi_model->get_info(3);
-			$data['slider'] = $this->Slider_model->get_info(6);
+			$data['slider'] = $this->Slider_model->get_active_sliders(6);
 			$data['settings'] = $this->Settings_model->get();
 			$this->load->view('frontend',$data);
 		}
