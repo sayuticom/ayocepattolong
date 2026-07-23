@@ -161,67 +161,41 @@
 		</header>
 
 		<main>
-			<?php if ($has_hero_slider): ?>
-			<section id="home" class="act-hero act-hero-slider" aria-roledescription="carousel" aria-label="Hero Ayo Cepat Tolong">
-				<div class="act-hero-slides" id="actHeroSlider">
-					<?php foreach ($hero_slides as $index => $slide): ?>
-					<?php
-						$is_active_slide = $index === 0;
-						$position_class = 'act-hero-slide-' . $slide['text_position'];
-						$heading_tag = $is_active_slide ? 'h1' : 'h2';
-					?>
-					<article class="act-hero-slide <?= $position_class ?> <?= $is_active_slide ? 'is-active' : '' ?>"
-						aria-hidden="<?= $is_active_slide ? 'false' : 'true' ?>"
-						style="--hero-overlay-opacity: <?= $slide['overlay_opacity'] / 100; ?>;">
-						<div class="act-hero-slide-media">
-							<picture>
-								<?php if (!empty($slide['mobile_image'])): ?>
-								<source media="(max-width: 640px)" srcset="<?= html_escape($slide['mobile_image']) ?>">
-								<?php endif; ?>
-								<img src="<?= html_escape($slide['image']) ?>" alt="<?= html_escape($slide['title']) ?>">
-							</picture>
-						</div>
-						<div class="act-hero-slide-overlay"></div>
-						<div class="act-hero-slide-content">
-							<div class="act-container act-hero-slide-inner">
-								<p class="act-eyebrow">GERAKAN KEMANUSIAAN ANTAR KOMUNITAS</p>
-								<<?= $heading_tag ?>><?= html_escape($slide['title']) ?></<?= $heading_tag ?>>
-								<?php if (!empty($slide['caption'])): ?>
-								<p class="act-hero-text"><?= html_escape($slide['caption']) ?></p>
-								<?php endif; ?>
-								<?php if ((!empty($slide['primary_button_text']) && !empty($slide['primary_button_url'])) || (!empty($slide['secondary_button_text']) && !empty($slide['secondary_button_url']))): ?>
-								<div class="act-hero-actions">
-									<?php if (!empty($slide['primary_button_text']) && !empty($slide['primary_button_url'])): ?>
-									<a href="<?= html_escape($slide['primary_button_url']) ?>" class="act-btn act-btn-primary" <?= !empty($slide['primary_external']) ? 'target="_blank" rel="noopener noreferrer"' : '' ?> <?= $is_active_slide ? '' : 'tabindex="-1"' ?>><?= html_escape($slide['primary_button_text']) ?></a>
-									<?php endif; ?>
-									<?php if (!empty($slide['secondary_button_text']) && !empty($slide['secondary_button_url'])): ?>
-									<a href="<?= html_escape($slide['secondary_button_url']) ?>" class="act-btn act-btn-outline" <?= !empty($slide['secondary_external']) ? 'target="_blank" rel="noopener noreferrer"' : '' ?> <?= $is_active_slide ? '' : 'tabindex="-1"' ?>><?= html_escape($slide['secondary_button_text']) ?></a>
-									<?php endif; ?>
-								</div>
-								<?php endif; ?>
-							</div>
-						</div>
-					</article>
-					<?php endforeach; ?>
-				</div>
-
-				<?php if (count($hero_slides) > 1): ?>
-				<button class="act-hero-nav act-hero-prev" type="button" aria-label="Slide hero sebelumnya">
-					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
-				</button>
-				<button class="act-hero-nav act-hero-next" type="button" aria-label="Slide hero berikutnya">
-					<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
-				</button>
-				<div class="act-hero-dots" role="tablist" aria-label="Pilih slide hero">
-					<?php foreach ($hero_slides as $index => $slide): ?>
-					<button type="button" class="<?= $index === 0 ? 'is-active' : '' ?>" aria-label="Tampilkan slide <?= $index + 1 ?>" aria-selected="<?= $index === 0 ? 'true' : 'false' ?>"></button>
-					<?php endforeach; ?>
-				</div>
-				<?php endif; ?>
-			</section>
-			<?php else: ?>
 			<section id="home" class="act-hero">
 				<div class="act-container act-hero-grid">
+					<div class="act-hero-media <?= $has_hero_slider ? 'act-hero-slider' : '' ?>" <?= $has_hero_slider ? 'aria-roledescription="carousel" aria-label="Slider gambar kegiatan Ayo Cepat Tolong"' : '' ?>>
+						<?php if ($has_hero_slider): ?>
+						<div class="act-hero-slides" id="actHeroSlider">
+							<?php foreach ($hero_slides as $index => $slide): ?>
+							<?php $is_active_slide = $index === 0; ?>
+							<article class="act-hero-slide <?= $is_active_slide ? 'is-active' : '' ?>" aria-hidden="<?= $is_active_slide ? 'false' : 'true' ?>">
+								<picture>
+									<?php if (!empty($slide['mobile_image'])): ?>
+									<source media="(max-width: 640px)" srcset="<?= html_escape($slide['mobile_image']) ?>">
+									<?php endif; ?>
+									<img src="<?= html_escape($slide['image']) ?>" alt="<?= html_escape($slide['title']) ?>">
+								</picture>
+							</article>
+							<?php endforeach; ?>
+						</div>
+
+						<?php if (count($hero_slides) > 1): ?>
+						<button class="act-hero-nav act-hero-prev" type="button" aria-label="Slide hero sebelumnya">
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+						</button>
+						<button class="act-hero-nav act-hero-next" type="button" aria-label="Slide hero berikutnya">
+							<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+						</button>
+						<div class="act-hero-dots" role="tablist" aria-label="Pilih slide hero">
+							<?php foreach ($hero_slides as $index => $slide): ?>
+							<button type="button" class="<?= $index === 0 ? 'is-active' : '' ?>" aria-label="Tampilkan slide <?= $index + 1 ?>" aria-selected="<?= $index === 0 ? 'true' : 'false' ?>"></button>
+							<?php endforeach; ?>
+						</div>
+						<?php endif; ?>
+						<?php else: ?>
+						<img src="<?= $hero_image ?>" alt="Aksi kemanusiaan Ayo Cepat Tolong">
+						<?php endif; ?>
+					</div>
 					<div class="act-hero-copy">
 						<p class="act-eyebrow">GERAKAN KEMANUSIAAN ANTAR KOMUNITAS</p>
 						<h1>Bergerak Cepat,<br>Menolong Lebih Dekat</h1>
@@ -236,12 +210,8 @@
 							<span class="act-trust-red">Kolaboratif</span>
 						</div>
 					</div>
-					<div class="act-hero-media">
-						<img src="<?= $hero_image ?>" alt="Aksi kemanusiaan Ayo Cepat Tolong">
-					</div>
 				</div>
 			</section>
-			<?php endif; ?>
 
 			<section id="warta" class="act-section act-news-section">
 				<div class="act-container">
